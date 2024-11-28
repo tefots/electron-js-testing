@@ -7,7 +7,7 @@ export default function Welcome(){
         <div className="bg-gray-100 min-h-screen flex items-center justify-center">
         <div className="container mx-auto p-6 text-center">
           <h1 className="text-5xl font-bold text-blue-600 mb-6">
-            Welcome to Tsiu POS System
+            Welcome to Tequila Tech Solutions POS System
           </h1>
           <p className="text-lg text-gray-600 mb-6">
             Streamline your sales process with our easy-to-use Point of Sale solution.
