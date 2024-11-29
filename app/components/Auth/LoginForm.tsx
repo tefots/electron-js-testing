@@ -58,12 +58,13 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
            <Link href={'/pages/Dashboard'}>Login</Link>
           </button>
           <div className="mt-6 text-center">
+          Don't have an account?
           <Link href="/pages/Auth/Signup"
-          className="text-center text-blue-700 text-lg"
+          className="text-center ms-4 text-blue-700 text-lg"
           passHref
-          >Don't have an account? Sign up here</Link>
-          </div>
-      
+          >
+            Sign up here</Link>
+          </div>      
         </form>
       </div>
     </div>
