@@ -55,7 +55,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
             type="submit"
             className="w-full py-3 bg-blue-600 text-white font-semibold rounded-2xl shadow-xl hover:bg-blue-700 transition-all"
           >
-            Login
+           <Link href={'/pages/Dashboard'}>Login</Link>
           </button>
           <div className="mt-6 text-center">
           <Link href="/pages/Auth/Signup"
