@@ -3,25 +3,23 @@ const path = require('path');
 
 let mainWindow;
 
-function createWindow() {
+app.on('ready', () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: false, // Secure approach
+      contextIsolation: true, // Isolate the renderer process
     },
   });
 
-  // Load the Next.js development server URL
-  mainWindow.loadURL('http://localhost:3000');
+  const startUrl = 'http://localhost:3000'; // Assuming Next.js is running on port 3000
+  mainWindow.loadURL(startUrl);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-}
-
-app.on('ready', createWindow);
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
