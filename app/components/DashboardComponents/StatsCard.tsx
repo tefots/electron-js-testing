@@ -5,11 +5,12 @@ interface StatsCardProps {
   title: string
   // value: string
   icon: React.ReactNode
- // href: string
+  href: string
 }
 
-export function StatsCard({ title, icon }: StatsCardProps) {
+export function StatsCard({ title, icon, href }: StatsCardProps) {
   return (
+    <Link href={href} passHref>
     <Card className="bg-blue-200 p-8">
       <CardHeader className="flex flex-col items-center justify-between space-y-0 pb-2">
        {icon}
@@ -21,7 +22,7 @@ export function StatsCard({ title, icon }: StatsCardProps) {
         <div className="text-2xl font-bold">{value}</div>
       </CardContent> */}
     </Card>
-
+    </Link>
   )
 }
 
