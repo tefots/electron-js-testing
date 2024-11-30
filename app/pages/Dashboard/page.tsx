@@ -2,16 +2,16 @@ import { DashboardLayout } from './../../components/DashboardComponents/Dashboar
 import { StatsCard } from './../../components/DashboardComponents/StatsCard'
 import { RecentActivity } from './../../components/DashboardComponents/RecentActivity'
 import { DataTable } from './../../components/DashboardComponents/DataTable'
-import { Users, ShoppingCart, DollarSign, TrendingUp } from 'lucide-react'
+import { Users, ShoppingCart, DollarSign, TrendingUp, Book } from 'lucide-react'
 
 export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard title="Total Users" value="1,234" icon={<Users size={24} />} />
-        <StatsCard title="Total Products" value="567" icon={<ShoppingCart size={24} />} />
-        <StatsCard title="Revenue" value="$12,345" icon={<DollarSign size={24} />} />
-        <StatsCard title="Growth" value="+15%" icon={<TrendingUp size={24} />} />
+        <StatsCard title="Price Book"   icon={<Book size={24} />} />
+        <StatsCard title="Reports"  icon={<ShoppingCart size={24} />} />
+        <StatsCard title=""  icon={<DollarSign size={24} />} />
+        <StatsCard title="Growth"  icon={<TrendingUp size={24} />} />
       </div>
       <div className="grid gap-4 mt-4 md:grid-cols-2">
         <RecentActivity />
