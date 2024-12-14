@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export function RecentActivity() {
   const activities = [
-    { id: 1, user: 'John Doe', action: 'Created a new post', time: '2 hours ago' },
-    { id: 2, user: 'Jane Smith', action: 'Updated their profile', time: '4 hours ago' },
-    { id: 3, user: 'Bob Johnson', action: 'Commented on a post', time: '6 hours ago' },
+    { id: 1, user: 'Thabo Makatle', action: 'Sold him 4 peach trees', time: '2 hours ago' },
+    { id: 2, user: 'Lereko Halieo', action: 'Ordered 20 Lemon trees and paid for 15', time: '4 hours ago' },
+    { id: 3, user: 'Bohlokoa Tholoana', action: 'SOld her 8 rose flower tree', time: '6 hours ago' },
   ]
 
   return (
