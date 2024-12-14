@@ -23,7 +23,7 @@ import {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead>Price</TableHead>
+            <TableHead>Price Per Item</TableHead>
             <TableHead>Quantity</TableHead>
           </TableRow>
         </TableHeader>
