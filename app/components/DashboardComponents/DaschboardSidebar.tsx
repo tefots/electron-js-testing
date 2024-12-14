@@ -6,7 +6,7 @@ export function DashboardSidebar() {
     <aside className="w-64 bg-gray-800 text-white p-4">
       <div className="text-2xl font-bold mb-8">Admin Dashboard</div>
       <nav>
-        <ul className="space-y-2">
+        <div className="space-y-2">
           
             <Link href="/dashboard" className="flex items-center p-2 hover:bg-gray-700 rounded">
               <Home className="mr-2" size={20} />
@@ -37,7 +37,7 @@ export function DashboardSidebar() {
               Logout
             </Link>
           
-        </ul>
+        </div>
       </nav>
     </aside>
   )
