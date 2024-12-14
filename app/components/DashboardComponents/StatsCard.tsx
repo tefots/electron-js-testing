@@ -16,8 +16,6 @@ export function StatsCard({ title, icon, href }: StatsCardProps) {
        {icon}
         <CardTitle className="text-xl mt-4 font-medium p-3">{title}</CardTitle>
       </CardHeader>
-
-
       {/* <CardContent>
         <div className="text-2xl font-bold">{value}</div>
       </CardContent> */}
