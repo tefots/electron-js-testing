@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
         </div>
       ) : (
         <div className="">
-          <h1 className="text-xl text-center font-semibold ">Login Page</h1>
+          {/* <h1 className="text-xl text-center font-semibold ">Login Page</h1> */}
           <LoginForm onLogin={handleLogin} />
           {errorMessage && <p>{errorMessage}</p>}
            </div>
