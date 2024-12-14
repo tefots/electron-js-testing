@@ -8,11 +8,12 @@ import {
   } from '@/components/ui/table'
   
   const data = [
-    { id: 1, name: 'Product A', category: 'Electronics', price: '$199.99', stock: 50 },
-    { id: 2, name: 'Product B', category: 'Clothing', price: '$49.99', stock: 100 },
-    { id: 3, name: 'Product C', category: 'Home & Garden', price: '$79.99', stock: 30 },
-    { id: 4, name: 'Product D', category: 'Electronics', price: '$299.99', stock: 20 },
-    { id: 5, name: 'Product E', category: 'Clothing', price: '$39.99', stock: 80 },
+    { id: 1, name: 'Grape', category: 'Fruit Trees', price: 'M120.00', stock: 50 },
+    { id: 2, name: 'Pine', category: 'Ornamental(Forest) Trees', price: 'M149.99', stock: 100 },
+    { id: 3, name: 'Peach', category: 'Fruit Trees', price: 'M79.99', stock: 30 },
+    { id: 4, name: 'Lemon', category: 'Fruit Trees', price: 'M99.00', stock: 20 },
+    { id: 5, name: 'Rose', category: 'Flowers', price: 'M45.00', stock: 45 },
+    { id: 6, name: 'Aloe', category: 'Medical Plants', price: 'M50.00', stock: 10 },
   ]
   
   export function DataTable() {
@@ -23,7 +24,7 @@ import {
             <TableHead>Name</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Stock</TableHead>
+            <TableHead>Quantity</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
