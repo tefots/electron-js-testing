@@ -11,10 +11,10 @@ interface StatsCardProps {
 export function StatsCard({ title, icon, href }: StatsCardProps) {
   return (
     <Link href={href} passHref>
-    <Card className="bg-blue-200 p-8">
-      <CardHeader className="flex flex-col items-center justify-between space-y-0 pb-2">
+    <Card className="bg-blue-50">
+      <CardHeader className="flex flex-col items-center justify-between space-y-0 pb-1">
        {icon}
-        <CardTitle className="text-xl mt-4 font-medium p-4">{title}</CardTitle>
+        <CardTitle className="text-xl mt-4 font-medium p-3">{title}</CardTitle>
       </CardHeader>
 
 
