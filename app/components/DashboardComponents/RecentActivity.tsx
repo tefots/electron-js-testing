@@ -10,10 +10,10 @@ export function RecentActivity() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle className="text-green-600">Recent Activity</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="space-y-4">
+        <div className=" text-black space-y-4 ">
           {activities.map((activity) => (
             <li key={activity.id} className="flex justify-between items-center">
               <div>
@@ -23,7 +23,7 @@ export function RecentActivity() {
               <span className="text-sm text-gray-500">{activity.time}</span>
             </li>
           ))}
-        </ul>
+        </div>
       </CardContent>
     </Card>
   )

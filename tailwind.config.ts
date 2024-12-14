@@ -49,7 +49,12 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+			goldish:{
+				DEFAULT: '#FFD700',
+				light: '#FFE066',
+				dark: '#B8860b'
+			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
