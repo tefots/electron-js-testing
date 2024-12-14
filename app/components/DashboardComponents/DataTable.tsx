@@ -7,6 +7,7 @@ import {
     TableRow,
   } from '@/components/ui/table'
   
+  // an array of products
   const data = [
     { id: 1, name: 'Grape', category: 'Fruit Trees', price: 'M120.00', stock: 50 },
     { id: 2, name: 'Pine', category: 'Ornamental(Forest) Trees', price: 'M149.99', stock: 100 },
