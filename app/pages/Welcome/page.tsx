@@ -17,8 +17,7 @@ export default function Welcome() {
       <div className="relative z-10 container mx-auto px-6 text-center">
         {/* Main Heading */}
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-blue-200 mb-4">
-          Welcome to Tequila Tech Solutions POS System
-        </h1>
+          Welcome to Lesotho Nursery Shop</h1>
 
         {/* Subheading */}
         <p className="text-md sm:text-lg lg:text-xl text-gray-100 mb-8">
