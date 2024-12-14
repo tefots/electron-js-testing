@@ -12,7 +12,7 @@ export function DashboardSidebar() {
               Dashboard
             </Link>
           
-            <Link href="/dashboard/users" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <Link href="/pages/Users" className="flex items-center p-2 hover:bg-gray-700 rounded">
               <Users className="mr-2" size={20} />
               Users
             </Link>
