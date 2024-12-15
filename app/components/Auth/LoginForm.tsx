@@ -15,7 +15,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-300 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
         <form onSubmit={handleSubmit}>
