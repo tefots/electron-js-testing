@@ -17,17 +17,17 @@ export function DashboardSidebar() {
               Users
             </Link>
           
-            <Link href="/dashboard/products" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <Link href="/pages/Products" className="flex items-center p-2 hover:bg-gray-700 rounded">
               <ShoppingCart className="mr-2" size={20} />
               Products
             </Link>
           
-            <Link href="/dashboard/analytics" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <Link href="/pages/Analytics" className="flex items-center p-2 hover:bg-gray-700 rounded">
               <BarChart2 className="mr-2" size={20} />
               Analytics
             </Link>
           
-            <Link href="/dashboard/settings" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <Link href="/pages/Settings" className="flex items-center p-2 hover:bg-gray-700 rounded">
               <Settings className="mr-2" size={20} />
               Settings
             </Link>
