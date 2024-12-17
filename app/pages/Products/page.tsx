@@ -19,9 +19,12 @@ export default function Products (){
             <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
             <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
             <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
+            <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
         </div>
 
-        <div className="flex mt-4">
+        {/* products cards with images and numbers */}
+        <div></div>
+        <div className="grid   md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-1 mt-4 max-w-5xl space-x-4">
             <ProductsCards image={
                 <Image
                 src={'/m2.png'}
@@ -32,7 +35,9 @@ export default function Products (){
                 title={"Peach Trees"}
                 description={"My description"}
                 price={23}
-                editIcon={<PencilIcon size={20} color="blue" /> } />
+                pricePerProduct={"M70 / item" } />
+
+               
 
                 
         </div>

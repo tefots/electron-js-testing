@@ -7,10 +7,10 @@ interface productProps{
     title: String
     description: String
     price: number
-    editIcon: React.ReactNode
+    pricePerProduct: String
     }
 
-    export default function ProductsCards({image, title,description, price, editIcon}: productProps){
+    export default function ProductsCards({image, title,description, price, pricePerProduct}: productProps){
 
         return(
             <>
@@ -26,7 +26,7 @@ interface productProps{
                     {price}
                     </div>
                     <div className="mt-2 mx-5">
-                    {editIcon}
+                    {pricePerProduct}
                     </div>
 
 
