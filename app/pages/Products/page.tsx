@@ -19,12 +19,48 @@ export default function Products (){
             <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
             <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
             <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
-            <ProductsPage icon={<Settings size= {20} /> } title ="Stetings" />
+            <ProductsPage icon={<Settings size= {18} /> } title ="Stetings" />
         </div>
 
         {/* products cards with images and numbers */}
         <div></div>
         <div className="grid   md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-1 mt-4 max-w-5xl space-x-4">
+            <ProductsCards image={
+                <Image
+                src={'/m2.png'}
+                width={200}
+                height={200}
+                alt="Image on the top of Card"                
+                />}
+                title={"Peach Trees"}
+                description={"My description"}
+                price={23}
+                pricePerProduct={"M70 / item" } />
+
+            <ProductsCards image={
+                <Image
+                src={'/m2.png'}
+                width={200}
+                height={200}
+                alt="Image on the top of Card"                
+                />}
+                title={"Peach Trees"}
+                description={"My description"}
+                price={23}
+                pricePerProduct={"M70 / item" } />
+
+            <ProductsCards image={
+                <Image
+                src={'/m2.png'}
+                width={200}
+                height={200}
+                alt="Image on the top of Card"                
+                />}
+                title={"Peach Trees"}
+                description={"My description"}
+                price={23}
+                pricePerProduct={"M70 / item" } />
+
             <ProductsCards image={
                 <Image
                 src={'/m2.png'}

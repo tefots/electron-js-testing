@@ -9,11 +9,12 @@ export default function ProductsPage({title, icon}: productProps ) {
       <div className="p-2">
         {/* top of the products that provides the description*/}
 
-        <Card className="flex flex-row  bg-white p-2">
-          <CardHeader className="ms-2">{icon}</CardHeader>
-          <CardTitle className="text-lg items-center space-y-2 mt-4 p-1 ms-0 mr-2 font-medium text-black-400">{title}</CardTitle>
-
-        </Card>
+        <div className="flex flex-row rounded-lg bg-white p-5 space-x-4 items-center">
+          <div className="card-header">
+            {icon}
+          </div>
+          <div className="card-title"> {title}</div>
+        </div>
       </div>
     );
   }
