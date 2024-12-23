@@ -4,6 +4,7 @@ import ProductsPage from "@/app/components/SidebarComponents/Products"
 import ProductsCards from "@/app/components/SidebarComponents/productsCards"
 import { Book, Flower, Flower2, Heart, PencilIcon, Settings, Trees } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link";
 import { useRouter } from "next/navigation"
 
 import { title } from "process"
@@ -32,12 +33,12 @@ export default function Products (){
             <ProductsPage icon={<Flower size= {20} /> } title ="Flowers" />
             <ProductsPage icon={<Flower2 size= {20} /> } title ="Herbs" />
 
-            <div>
-
-            <button className="mx-2 bg-slate-500  mt-6  p-3 rounded-2xl text-white" onClick={() => addProduct()}>
+        <div className="mt-9">            
+            <Link className="mx-6 bg-slate-500 text-white p-3 rounded-xl" href={'/pages/Products/add'} passHref>
                         + Add Product
-            </button>
+            </Link>
             </div>
+            
         </div>
 
         {/* products cards with images and numbers */}
