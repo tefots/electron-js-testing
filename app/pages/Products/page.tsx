@@ -23,15 +23,15 @@ export default function Products (){
             <div className="mx-2">
                 
                     <h1 className="text-2xl font-bold mb-4">Products</h1>
-                    <p>Manage your product inventory here.</p>
+                    <p className="text-lg">Manage your product inventory here.</p>
             
             </div>
 
-        <div className="flex flex-col md:flex-row">
-            <ProductsPage icon={<Book size= {20} /> } title ="Fruit Trees" />
-            <ProductsPage icon={<Trees size= {20} /> } title ="Forest" />
-            <ProductsPage icon={<Flower size= {20} /> } title ="Flowers" />
-            <ProductsPage icon={<Flower2 size= {20} /> } title ="Herbs" />
+        <div className="flex flex-col md:flex-row font-medium">
+            <ProductsPage icon={<Book size= {20} className="text-green-400"/> } title ="Fruit Trees" />
+            <ProductsPage icon={<Trees size= {20} className="text-green-400"/> } title ="Forest" />
+            <ProductsPage icon={<Flower size= {20} className="text-green-400"/> } title ="Flowers" />
+            <ProductsPage icon={<Flower2 size= {20} className="text-green-400"/> } title ="Herbs" />
 
         <div className="mt-9">            
             <Link className="mx-6 bg-slate-500 text-white p-3 rounded-xl" href={'/pages/Products/add'} passHref>
