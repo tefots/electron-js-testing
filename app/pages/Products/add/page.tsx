@@ -80,8 +80,8 @@ const CreateHackathon = () => {
         />
           
           <input
-          type="url"
-          name="website"
+          type="number"
+          name="price"
           placeholder="Price of each product"
           value={formData.website}
           onChange={handleChange}
