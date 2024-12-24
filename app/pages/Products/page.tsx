@@ -37,8 +37,7 @@ export default function Products (){
             <Link className="mx-6 bg-slate-500 text-white p-3 rounded-xl" href={'/pages/Products/add'} passHref>
                         + Add Product
             </Link>
-            </div>
-            
+            </div>            
         </div>
 
         {/* products cards with images and numbers */}

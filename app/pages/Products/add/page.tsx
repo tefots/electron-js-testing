@@ -35,9 +35,10 @@ const CreateHackathon = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 items-center w-1/2 justify-center">
-      <h1 className="text-2xl font-bold mb-4">Add Product</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 w-1/2 ">
+    <div className="flex items-center justify-center min-h-screen ">
+      <form onSubmit={handleSubmit} className="space-y-4 w-1/2 bg-white p-8 rounded-lg shadow-xl text-center bottom-0">
+      <h1 className="text-2xl text-green-500 font-bold mb-4">Add Product</h1>
+     
         <input
           type="text"
           name="hackathonName"
@@ -53,7 +54,7 @@ const CreateHackathon = () => {
           placeholder="Product Name"
           value={formData.organizer}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full border p-3 rounded-lg"
           required
         />
         <input
@@ -62,7 +63,7 @@ const CreateHackathon = () => {
           placeholder="Quantity"
           value={formData.organizerEmail}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full border p-3 rounded-lg"
           required
         />
 
@@ -76,7 +77,7 @@ const CreateHackathon = () => {
           placeholder="Image of Product"
           value={formData.description}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full border p-3 rounded-lg"
         />
           
           <input
@@ -85,14 +86,14 @@ const CreateHackathon = () => {
           placeholder="Price of each product"
           value={formData.website}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className="w-full border p-3 rounded-lg"
         />
        
         <button
           type="submit"
-          className="bg-purple-500 rounded-xl hover:bg-blue-600 text-white px-4 py-2 "
+          className="bg-green-600 rounded-xl hover:bg-green-400 text-white px-4 py-2 "
         >
-          Create Hackathon
+          Add Product
         </button>
       </form>
     </div>
