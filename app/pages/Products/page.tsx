@@ -20,7 +20,7 @@ export default function Products (){
     return(
         <>
         <DashboardLayout >
-            <div className="flex ">
+            <div className="mx-2">
                 
                     <h1 className="text-2xl font-bold mb-4">Products</h1>
                     <p>Manage your product inventory here.</p>
@@ -52,9 +52,10 @@ export default function Products (){
                 alt="Image on the top of Card"                
                 />}
                 title={"Peach Trees"}
-                description={"My description"}
-                price={23}
-                pricePerProduct={"M70 / item" } />
+                description={"My description"}                
+                pricePerProduct={"M99" }
+                quantity={2}
+                />
 
             <ProductsCards image={
                 <Image
@@ -65,8 +66,8 @@ export default function Products (){
                 />}
                 title={"Peach Trees"}
                 description={"My description"}
-                price={23}
-                pricePerProduct={"M70 / item" } />
+                quantity={23}
+                pricePerProduct={"M80" } />
 
             <ProductsCards image={
                 <Image
@@ -77,8 +78,8 @@ export default function Products (){
                 />}
                 title={"Peach Trees"}
                 description={"My description"}
-                price={23}
-                pricePerProduct={"M70 / item" } />
+                quantity={232}
+                pricePerProduct={"M70" } />
 
             <ProductsCards image={
                 <Image
@@ -89,8 +90,8 @@ export default function Products (){
                 />}
                 title={"Peach Trees"}
                 description={"My description"}
-                price={23}
-                pricePerProduct={"M70 / item" } />
+                quantity={40}
+                pricePerProduct={"M75" } />
 
                
 
