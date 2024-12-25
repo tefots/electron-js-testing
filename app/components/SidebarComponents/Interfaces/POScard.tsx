@@ -17,11 +17,11 @@ export default function POSCard({image, icon, title, price}: posProps){
         <div>
             <Card className="">
                 <CardHeader>
-                    <div className="relative">
+                    <div className="relative w-full">
                     {image}
                     </div>
 
-                    <div className="absolute mx-auto">
+                    <div className="absolute ms-2">
                         {icon}
                     </div>
                 </CardHeader>
