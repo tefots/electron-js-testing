@@ -58,7 +58,7 @@ export default function Products (){
 
             <ProductsCards image={
                 <Image
-                src={'/m2.png'}
+                src={'/n1.jpg'}
                 width={200}
                 height={200}
                 alt="Image on the top of Card"                
@@ -70,7 +70,7 @@ export default function Products (){
 
             <ProductsCards image={
                 <Image
-                src={'/m2.png'}
+                src={'/n3.jpeg'}
                 width={200}
                 height={200}
                 alt="Image on the top of Card"                
@@ -82,7 +82,7 @@ export default function Products (){
 
             <ProductsCards image={
                 <Image
-                src={'/m2.png'}
+                src={'/n1.jpg'}
                 width={200}
                 height={200}
                 alt="Image on the top of Card"                

@@ -11,7 +11,7 @@ export default function DashboardPage() {
         <StatsCard title="Price Book" icon={<Book size={30} />} href="/dashboard/price-book" />
         <StatsCard title="Reports" icon={<FileText size={30} />} href="/dashboard/reports" />
         <StatsCard title="Stock Levels" icon={<Package size={30} />} href="/dashboard/stock-levels" />
-        <StatsCard title="POS" icon={<CreditCard size={30} />} href="/dashboard/pos" />
+        <StatsCard title="POS" icon={<CreditCard size={30} />} href="/pages/Pos" />
       </div>
       <div className="grid gap-4 mt-4 md:grid-cols-2">
         <RecentActivity />
