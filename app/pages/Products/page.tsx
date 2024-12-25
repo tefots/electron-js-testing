@@ -90,11 +90,7 @@ export default function Products (){
                 title={"Peach Trees"}
                 description={"My description"}
                 quantity={40}
-                pricePerProduct={"M75" } />
-
-               
-
-                
+                pricePerProduct={"M75" } />        
         </div>
         </DashboardLayout>
         </>
