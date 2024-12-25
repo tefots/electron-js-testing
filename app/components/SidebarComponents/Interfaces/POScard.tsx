@@ -15,10 +15,13 @@ export default function POSCard({image, icon, title, price}: posProps){
  
     return(
         <div>
-            <Card>
+            <Card className="">
                 <CardHeader>
+                    <div className="relative">
                     {image}
-                    <div>
+                    </div>
+
+                    <div className="absolute mx-auto">
                         {icon}
                     </div>
                 </CardHeader>
