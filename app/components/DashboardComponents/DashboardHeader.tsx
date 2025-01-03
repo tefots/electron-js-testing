@@ -46,7 +46,7 @@ export function DashboardHeader() {
             </div>
             {/* search icon */}
             <div className="px-2 p-3  ">
-                <SearchIcon className="h-" />
+                <SearchIcon className="h-7" />
             </div>
         </div>
         <div className="flex items-center space-x-4">
