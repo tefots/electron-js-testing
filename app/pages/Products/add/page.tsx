@@ -89,8 +89,7 @@ const CreateHackathon = () => {
           value={formData.organizerEmail}
           onChange={handleChange}
           className="w-full border p-3 rounded-lg"
-          required
-        />
+          required />
           
           <input
           type="number"
@@ -100,7 +99,6 @@ const CreateHackathon = () => {
           onChange={handleChange}
           className="w-full border p-3 rounded-lg"
         />
-
 
         <input
         type="file"
