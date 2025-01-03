@@ -22,14 +22,13 @@ export function DashboardHeader() {
     <header className="bg-white shadow-sm p-4">
       <div className="flex flex-col md:flex-row justify-between items-center">
         <h1 className="text-2xl font-semibold">Lesotho Nursery Shop</h1>
-        <div className="flex flex-col md:flex-row bg-slate-50  mx-5 rounded-xl">
+        <div className="flex flex-col md:flex-row   mx-5 rounded-xl">
             <div className="p-1 ">
               <input 
                type='text'
                placeholder='Search by category / name'
                className="border-slate-200 border rounded-lg text-start p-2"
-               />
-               
+               />               
             </div>
 
             <div className='px-2'>
@@ -46,8 +45,8 @@ export function DashboardHeader() {
               </select>
             </div>
             {/* search icon */}
-            <div>
-                <SearchIcon />
+            <div className="px-2 p-3  ">
+                <SearchIcon className="h-" />
             </div>
         </div>
         <div className="flex items-center space-x-4">
