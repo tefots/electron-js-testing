@@ -66,7 +66,7 @@ const CreateHackathon = () => {
      
         <input
           type="text"
-          name="hackathonName"
+          name="productName"
           placeholder="name of user"
           value={formData.hackathonName}
           onChange={handleChange}
@@ -118,8 +118,7 @@ const CreateHackathon = () => {
        
         <button
           type="submit"
-          className="bg-slate-600 rounded-xl hover:bg-green-400 text-white px-4 py-2 "
-        >
+          className="bg-slate-600 rounded-xl hover:bg-green-400 text-white px-4 py-2 ">
           Add Product
         </button>
       </form>
