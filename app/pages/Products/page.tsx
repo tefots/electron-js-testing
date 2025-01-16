@@ -20,8 +20,7 @@ export default function Products (){
     return(
         <>
         <DashboardLayout >
-            <div className="mx-2">
-                
+            <div className="mx-2">                
                     <h1 className="text-2xl font-bold mb-4">Products</h1>
                     <p className="text-lg">Manage your product inventory here.</p>
             
@@ -40,8 +39,7 @@ export default function Products (){
             </div>            
         </div>
 
-        {/* products cards with images and numbers */}
-      
+        {/* products cards with images and numbers */} 
         <div className="grid md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-1 mt-4 max-w-5xl space-x-4">
             <ProductsCards image={
                 <Image
