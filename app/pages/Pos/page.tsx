@@ -153,7 +153,6 @@ const POSPage = () => {
       </div>
     </div>
     </DashboardLayout>
-
   );
 };
 
