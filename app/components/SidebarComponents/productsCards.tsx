@@ -31,8 +31,7 @@ interface productProps{
                         </div>
                     </div>
                 </CardContent>
-            </Card>
-            
+            </Card>            
             </div>
         )
     }
