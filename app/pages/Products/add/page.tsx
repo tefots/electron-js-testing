@@ -39,24 +39,35 @@ const CreateHackathon = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // handle submit function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   if(!imageFile) return;
-
-   const formData = new FormData();
-   formData.append("images", imageFile);
-
-   try {
-    const response = await fetch("/api/products", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json();
-    alert(`Image uploaded: ${data.filePath}`);
-   } catch (error) {
-    console.error("Error uploading image: ", error)
-   }
+  
+    const formDataObj = new FormData();
+    formDataObj.append('productName', formData.organizer);
+    formDataObj.append('quantity', formData.organizerEmail);
+    formDataObj.append('price', formData.website);
+    if (imageFile) {
+      formDataObj.append('imagePath', imageFile);
+    }
+  
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        body: formDataObj,
+      });
+  
+      if (response.ok) {
+        alert('Product added successfully');
+        router.push('/Dashboard/Products'); // Redirect to dashboard
+      } else {
+        alert('Failed to add product');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
+  
 
   return (
     <DashboardLayout >

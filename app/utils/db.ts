@@ -11,6 +11,6 @@ db.prepare(`
     price REAL NOT NULL,
     imagePath TEXT
   )
-`).run();
+`).run();   
 
 export default db;
