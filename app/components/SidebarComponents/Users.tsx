@@ -13,7 +13,7 @@ export default function UsersPage() {
     <DashboardLayout>
         <div className="container mx-auto p-0 max-w-7xl">
             <div className="flex  md:flex-row flex-row justify-between py-2">
-            <h1 className="text-start mx-5 text-lg">Users </h1>
+            <h1 className="text-start mx-5 text-2xl font-bold">LNS Users </h1>
             {/* Seaerch input */}
             <div>
               <label >Search User</label>
