@@ -14,6 +14,15 @@ export default function UsersPage() {
         <div className="container mx-auto p-0 max-w-7xl">
             <div className="flex  md:flex-row flex-row justify-between py-2">
             <h1 className="text-start mx-5 text-lg">Users </h1>
+            {/* Seaerch input */}
+            <div>
+              <label >Search User</label>
+              <input
+              type='text'
+              placeholder='user ID'
+              className='border text-center mx-4 border-gray-400 rounded h-9'
+              />
+            </div>
             
             {/* action buttons to add user */}
             <div className="flex justify-end items-end mb-4 flex-col sm:flex-row">
@@ -23,8 +32,7 @@ export default function UsersPage() {
                     passHref>
                     + Add User
                     </Link>
-                    {/* 
-                    
+                    {/*                     
                     onClick={() => handleDeleteAll(setHackathons, setFilteredHackathons)}
                     */}
                     <button
@@ -38,11 +46,10 @@ export default function UsersPage() {
             </div>
             <div className="overflow-x-auto mt-5 mx-5">
                 {/* display the users in the form of table */}
-
-                <table className="min-w-full table-auto border-collapse mb-6">
-                    
+                <table className="min-w-full table-auto border-collapse mb-6">                    
                        <thead>
                             <tr className="p-4 gap-x-8 bg-slate-300 rounded-t-xl">
+                                <th className="px-4 py-2 text-start border">ID</th>
                                 <th className="px-4 py-2 text-start border">First Name</th>
                                 <th className="px-4 py-2 text-left border-r">Last Name</th>
                                 <th className="px-4 py-2 text-left border-r">Status</th>
@@ -56,6 +63,7 @@ export default function UsersPage() {
                     <tbody>
                         {data.map((item) => 
                          <tr key={item.id}>
+                         <td className="px-4 py-2 text-left border">{item.id}</td>
                          <td className="px-4 py-2 text-left border">{item.firstName}</td>
                          <td className="px-4 py-2 text-left border">{item.lastName}</td>
                          <td className="px-4 py-2 text-left border-b">{item.status}</td>
@@ -63,8 +71,10 @@ export default function UsersPage() {
                          <td className="px-4 py-2 text-left border-b">{item.UserType}</td>
                          <td className="px-4 py-2 text-left border-b">{item.phoneNumber}</td>
                          <td className="px-4 py-2 text-left border-b">
-                            <button>Details</button>
-                            <button>Delete</button>
+                            <Link href={'/pages/users/details'} passHref className='text-blue-500'>
+                            Details</Link>
+                            <button className='ms-4 text-red-500'>
+                              Delete</button>
                         </td>                         
                      </tr>
                         
