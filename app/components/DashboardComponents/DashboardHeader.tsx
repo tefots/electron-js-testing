@@ -19,7 +19,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="bg-white shadow-sm p-4">
+    <header className="bg-white shadow-sm p-4 mb-5">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         {/* Header Title */}
         <h1 className="text-2xl font-semibold text-gray-800">
