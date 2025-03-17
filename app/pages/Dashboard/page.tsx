@@ -3,10 +3,12 @@ import { StatsCard } from './../../components/DashboardComponents/StatsCard';
 import { RecentActivity } from './../../components/DashboardComponents/RecentActivity';
 import { DataTable } from './../../components/DashboardComponents/DataTable';
 import { Book, FileText, Package, CreditCard } from 'lucide-react';
+import { DashboardHeader } from '@/app/components/DashboardComponents/DashboardHeader';
 
 export default function DashboardPage() {
   return (
     <DashboardLayout>
+      <DashboardHeader />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard title="Price Book" icon={<Book size={30} />} href="/dashboard/price-book" />
         <StatsCard title="Reports" icon={<FileText size={30} />} href="/dashboard/reports" />
