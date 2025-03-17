@@ -7,30 +7,31 @@ export default function SignupForm() {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("user"); // Default role
+  const [role, setRole] = useState<string>("user");
+  const [message, setMessage] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password, role }),
+      const result = await (window as any).electronAPI.signupUser({
+        username,
+        email,
+        password,
+        role,
       });
 
-      if (response.ok) {
-        alert("User created successfully!");
+      if (result.success) {
+        setMessage("User created successfully!");
         setUsername("");
         setEmail("");
         setPassword("");
         setRole("user");
       } else {
-        const error = await response.json();
-        alert(`Error: ${error.error}`);
+        setMessage(`Error: ${result.error}`);
       }
     } catch (error) {
-      alert(`Error: ${error}`);
+      setMessage(`Error: ${error}`);
     }
   };
 
@@ -41,12 +42,8 @@ export default function SignupForm() {
           Sign Up
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username */}
           <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Username
             </label>
             <input
@@ -54,17 +51,12 @@ export default function SignupForm() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
               required
-              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
             />
           </div>
-          {/* Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
@@ -72,17 +64,12 @@ export default function SignupForm() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
               required
-              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
             />
           </div>
-          {/* Password */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
@@ -90,46 +77,34 @@ export default function SignupForm() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
               required
-              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
             />
           </div>
-          {/* Role */}
           <div>
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
               Role
             </label>
             <select
               id="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
             >
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>
-          {/* Submit Button */}
           <div>
-            <button
-              type="submit"
-              className="w-full flex justify-center px-4 py-2 bg-indigo-600 text-white font-medium text-sm rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
+            <button type="submit" className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md">
               Sign Up
             </button>
           </div>
-          <div>
+          <p className="text-center text-sm text-gray-600">{message}</p>
+          <div className="text-center">
             Already have an account?
-            <Link
-              href="/pages/Auth/Login"
-              className="ms-3 text-blue-700"
-              passHref
-            >
-                  Sign in here
+            <Link href="/pages/Auth/Login" className="text-blue-700 ml-2">
+              Sign in here
             </Link>
           </div>
         </form>

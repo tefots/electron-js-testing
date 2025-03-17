@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import SignupForm from '../../components/Auth/SignupForm';
 import { saveUser } from '../../utils/auth';
-import Link from 'next/link';
+// import Link from 'next/link';
 const SignupPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -17,7 +17,7 @@ const SignupPage: React.FC = () => {
   return (
     <div>
       <h1>Sign Up</h1>
-      <SignupForm onSignup={handleSignup} />
+      <SignupForm />
       {errorMessage && <p>{errorMessage}</p>}
      
     </div>
