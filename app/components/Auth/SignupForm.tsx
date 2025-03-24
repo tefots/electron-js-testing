@@ -3,6 +3,30 @@
 import Link from "next/link";
 import { useState } from "react";
 
+// Define the shape of the response from the Electron API
+interface SignupResponse {
+  success: boolean;
+  id?: number;
+  error?: string;
+}
+
+// Define the shape of the user data sent to Electron
+interface UserData {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
+// Extend the Window interface to include electronAPI
+declare global {
+  interface Window {
+    electronAPI: {
+      signupUser: (user: UserData) => Promise<SignupResponse>;
+    };
+  }
+}
+
 export default function SignupForm() {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -10,11 +34,11 @@ export default function SignupForm() {
   const [role, setRole] = useState<string>("user");
   const [message, setMessage] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const result = await (window as any).electronAPI.signupUser({
+      const result = await window.electronAPI.signupUser({
         username,
         email,
         password,
@@ -28,10 +52,21 @@ export default function SignupForm() {
         setPassword("");
         setRole("user");
       } else {
-        setMessage(`Error: ${result.error}`);
+        // Handle specific SQLite constraint errors
+        if (result.error?.includes("UNIQUE constraint failed: users.email")) {
+          setMessage("Warning! This email is already in use.");
+          setUsername("");
+          setEmail("");
+          setPassword("");
+          setRole("user");
+        } else if (result.error?.includes("UNIQUE constraint failed: users.username")) {
+          setMessage("Error: This username is already taken.");
+        } else {
+          setMessage(`Error: ${result.error || "Unknown error"}`);
+        }
       }
     } catch (error) {
-      setMessage(`Error: ${error}`);
+      setMessage(`Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -43,7 +78,10 @@ export default function SignupForm() {
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
               Username
             </label>
             <input
@@ -56,7 +94,10 @@ export default function SignupForm() {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -69,7 +110,10 @@ export default function SignupForm() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -82,7 +126,10 @@ export default function SignupForm() {
             />
           </div>
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="role"
+              className="block text-sm font-medium text-gray-700"
+            >
               Role
             </label>
             <select
@@ -96,7 +143,10 @@ export default function SignupForm() {
             </select>
           </div>
           <div>
-            <button type="submit" className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md">
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md"
+            >
               Sign Up
             </button>
           </div>
