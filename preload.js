@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
     signupUser: (user) => ipcRenderer.invoke('signupUser', user),
+    loginUser: (data) => ipcRenderer.invoke('loginUser', data),
     // Optional: Keep previous CRUD methods (remove if not needed)
     // createItem: (item) => ipcRenderer.invoke('create-item', item),
     // readItems: () => ipcRenderer.invoke('read-items'),

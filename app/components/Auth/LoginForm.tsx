@@ -1,17 +1,56 @@
-import Link from 'next/link';
-import React, { useState } from 'react';
+"use client";
 
-interface Props {
-  onLogin: (username: string, password: string) => void;
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+// Define the shape of the response from the Electron API
+interface LoginResponse {
+  success: boolean;
+  error?: string;
 }
 
-const LoginForm: React.FC<Props> = ({ onLogin }) => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+// Define the shape of the login data sent to Electron
+interface LoginData {
+  username: string;
+  password: string;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
+// Extend the Window interface to include electronAPI
+declare global {
+  interface Window {
+    electronAPI: {
+      loginUser: (data: LoginData) => Promise<LoginResponse>;
+    };
+  }
+}
+
+export default function LoginForm() {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onLogin(username, password);
+
+    try {
+      const result = await window.electronAPI.loginUser({
+        username,
+        password,
+      });
+
+      if (result.success) {
+        setMessage("Login successful!");
+        setUsername("");
+        setPassword("");
+        router.push("/pages/Dashboard"); // Navigate to dashboard on success
+      } else {
+        setMessage(`Error: ${result.error || "Invalid username or password"}`);
+      }
+    } catch (error) {
+      setMessage(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
   };
 
   return (
@@ -38,7 +77,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
           <div className="mb-6">
             <label
               htmlFor="password"
-              className="block  text-start text-md font-medium text-gray-600 mb-2"
+              className="block text-start text-md font-medium text-gray-600 mb-2"
             >
               Password
             </label>
@@ -55,20 +94,20 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
             type="submit"
             className="w-full py-3 bg-blue-600 text-white font-semibold rounded-2xl shadow-xl hover:bg-blue-700 transition-all"
           >
-           <Link href={'/pages/Dashboard'}>Login</Link>
+            Login
           </button>
+          <p className="text-center text-sm text-gray-600 mt-4">{message}</p>
           <div className="mt-6 text-center">
-          Don't have an account?
-          <Link href="/pages/Auth/Signup"
-          className="text-center ms-4 text-blue-700 text-lg"
-          passHref
-          >
-            Sign up here</Link>
-          </div>      
+            Don&apos;t have an account?
+            <Link
+              href="/pages/Auth/Signup"
+              className="text-center ms-4 text-blue-700 text-lg"
+            >
+              Sign up here
+            </Link>
+          </div>
         </form>
       </div>
     </div>
   );
-};
-
-export default LoginForm;
+}

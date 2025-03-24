@@ -23,6 +23,22 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
+// login user IPC Handler
+ipcMain.handle('loginUser', async (event, { username, password }) => {
+  return new Promise((resolve) => {
+      db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, row) => {
+          if (err) {
+              resolve({ success: false, error: err.message });
+          } else if (!row) {
+              resolve({ success: false, error: "Invalid username or password" });
+          } else {
+              resolve({ success: true });
+          }
+      });
+  });
+});
+
+
 // Signup User IPC Handler
 ipcMain.handle('signupUser', async (event, { username, email, password, role }) => {
     return new Promise((resolve) => {
@@ -39,6 +55,7 @@ ipcMain.handle('signupUser', async (event, { username, email, password, role }) 
         );
     });
 });
+
 
 // // Optional: Keep previous CRUD handlers for "items" (remove if not needed)
 // ipcMain.on('create-item', (event, { name, description }) => {
