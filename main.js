@@ -1,4 +1,7 @@
+//import { ipcMain } from "electron";
+import { signupUser } from "./db"; // Function that handles signup logic
 const { app, BrowserWindow, ipcMain } = require('electron');
+
 const path = require('path');
 const Database = require('better-sqlite3');
 
@@ -32,15 +35,27 @@ app.whenReady().then(() => {
     mainWindow.loadURL('http://localhost:3000'); // Adjust this if necessary
 });
 
-// Handle user signup
-ipcMain.handle('signup-user', async (event, user) => {
-    try {
-        const stmt = db.prepare(
-            'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)'
-        );
-        const result = stmt.run(user.username, user.email, user.password, user.role);
-        return { success: true, id: result.lastInsertRowid };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
+
+// adding an event listener
+ipcMain.handle("signup-user", async (_, userData) => {
+  try {
+    const result = await signupUser(userData);
+    return { success: true, userId: result.lastInsertRowid };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
+
+
+// Handle user signup
+// ipcMain.handle('signup-user', async (event, user) => {
+//     try {
+//         const stmt = db.prepare(
+//             'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)'
+//         );
+//         const result = stmt.run(user.username, user.email, user.password, user.role);
+//         return { success: true, id: result.lastInsertRowid };
+//     } catch (error) {
+//         return { success: false, error: error.message };
+//     }
+// });
