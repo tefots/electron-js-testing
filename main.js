@@ -102,3 +102,18 @@ ipcMain.handle('deleteAllUsers', async () => {
         });
     });
 });
+
+// Delete single User  IPC Handler
+ipcMain.handle('deleteUser', async (event, { id }) => {
+    return new Promise((resolve) => {
+        db.run('DELETE FROM users WHERE id = ?', [id], function (err) {
+            if (err) {
+                resolve({ success: false, error: err.message });
+            } else if (this.changes === 0) {
+                resolve({ success: false, error: 'User not found' });
+            } else {
+                resolve({ success: true });
+            }
+        });
+    });
+});

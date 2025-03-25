@@ -60,6 +60,22 @@ export default function UsersPage() {
     }
   };
 
+  // delete single user
+  const handleDelete = async (id: number) => {
+    if (confirm(`Are you sure you want to delete user with ID ${id}?`)) {
+      try {
+        const result = await window.electronAPI.deleteUser({ id });
+        if (result.success) {
+          setUsers(users.filter(user => user.id !== id));
+        } else {
+          console.error('Error deleting user:', result.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  };
+
   // Handle search input change
   const handleSearchChange = (e: { target: { value: SetStateAction<string>; }; }) => {
     setSearchQuery(e.target.value);
@@ -136,10 +152,12 @@ export default function UsersPage() {
                       <td className="px-4 py-2 text-left border-b">{item.email}</td>
                       <td className="px-4 py-2 text-left border-b">{item.phoneNumber}</td>
                       <td className="px-4 py-2 text-left border-b">
-                        <Link href={'/pages/users/details'} className="text-blue-500">
+                        <Link href={'/pages/users/details/${item.email}'} className="text-blue-500">
                           Details
                         </Link>
-                        <button className="ms-4 text-red-500">Delete</button>
+                        <button
+                        onClick={() => handleDelete(item.id)}
+                        className="ms-4 text-red-500">Delete</button>
                       </td>
                     </tr>
                   ))
