@@ -2,7 +2,7 @@
 
 import { Bell, SearchIcon, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export function DashboardHeader() {
   const [categories, setCategories] = useState([
@@ -12,10 +12,28 @@ export function DashboardHeader() {
   ]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [results, setResults] = useState([]);
+  const [showUserOverlay, setShowUserOverlay] = useState(false);
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    role: string;
+  } | null>(null);
+
+  // Load user data from localStorage when component mounts
+  useEffect(() => {
+    const storedUser = localStorage.getItem("loggedInUser");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleCategoryChange = (category: React.SetStateAction<string>) => {
     setSelectedCategory(category);
     // Add logic to fetch products based on the selected category
+  };
+
+  const toggleUserOverlay = () => {
+    setShowUserOverlay(!showUserOverlay);
   };
 
   return (
@@ -63,13 +81,43 @@ export function DashboardHeader() {
         </div>
 
         {/* Notification and User Icons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 relative">
           <Button variant="ghost" size="icon" className="p-2">
             <Bell size={20} />
           </Button>
-          <Button variant="ghost" size="icon" className="p-2">
-            <User size={20} />
-          </Button>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="p-2"
+              onClick={toggleUserOverlay}
+            >
+              <User size={28} className="bg-gray-400 rounded-full" />
+            </Button>
+
+            {/* User Overlay - Only show if user is logged in */}
+            {showUserOverlay && user && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg p-4 z-10 border border-gray-200">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-gray-800">
+                    {user.name}
+                  </span>
+                  <span className="text-sm text-gray-600">{user.email}</span>
+                  <span className="text-sm text-gray-500 mt-1">
+                    Role: {user.role}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => setShowUserOverlay(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
