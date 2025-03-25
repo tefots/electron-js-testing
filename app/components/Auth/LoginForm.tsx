@@ -41,7 +41,7 @@ export default function LoginForm() {
           router.push("/pages/Dashboard");
           setMessage("");
           setMessageType('');
-        }, 1000);
+        }, 800);
       } else {
         setMessage(result.error || "Invalid username or password");
         setMessageType('error');
