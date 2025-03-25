@@ -12,17 +12,25 @@ export interface SignupResponse {
 
 // Define the shape of the user data sent to Electron
 export interface UserData {
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   password: string;
-  role: string;
+  status: string;
+  userType: string;
+  phoneNumber: string;
 }
 
 export default function SignupForm() {
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("user");
+  const [status, setStatus] = useState<string>("Off"); // Default to "Off"
+  const [userType, setUserType] = useState<string>("user"); // Default to "user"
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
 
@@ -31,27 +39,31 @@ export default function SignupForm() {
 
     try {
       const result = await window.electronAPI.signupUser({
+        firstName,
+        lastName,
         username,
         email,
         password,
-        role,
+        status,
+        userType,
+        phoneNumber,
       });
 
       if (result.success) {
         setMessage("User created successfully!");
         setMessageType('success');
+        setFirstName("");
+        setLastName("");
         setUsername("");
         setEmail("");
         setPassword("");
-        setRole("user");
+        setStatus("Off");
+        setUserType("user");
+        setPhoneNumber("");
       } else {
         if (result.error?.includes("UNIQUE constraint failed: users.email")) {
           setMessage("This email is already in use.");
           setMessageType('error');
-          setUsername("");
-          setEmail("");
-          setPassword("");
-          setRole("user");
         } else if (result.error?.includes("UNIQUE constraint failed: users.username")) {
           setMessage("This username is already taken.");
           setMessageType('error');
@@ -66,13 +78,19 @@ export default function SignupForm() {
     }
   };
 
-  const handleInputChange = (field: 'username' | 'email' | 'password' | 'role') => 
+  const handleInputChange = (field: keyof UserData) => 
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       if (message) {
         setMessage('');
         setMessageType('');
       }
       switch (field) {
+        case 'firstName':
+          setFirstName(e.target.value);
+          break;
+        case 'lastName':
+          setLastName(e.target.value);
+          break;
         case 'username':
           setUsername(e.target.value);
           break;
@@ -82,8 +100,14 @@ export default function SignupForm() {
         case 'password':
           setPassword(e.target.value);
           break;
-        case 'role':
-          setRole(e.target.value);
+        case 'status':
+          setStatus(e.target.value);
+          break;
+        case 'userType':
+          setUserType(e.target.value);
+          break;
+        case 'phoneNumber':
+          setPhoneNumber(e.target.value);
           break;
       }
     };
@@ -104,6 +128,32 @@ export default function SignupForm() {
               {message}
             </p>
           )}
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              First Name
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={handleInputChange('firstName')}
+              required
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
+            />
+          </div>
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={handleInputChange('lastName')}
+              required
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
+            />
+          </div>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Username
@@ -144,18 +194,46 @@ export default function SignupForm() {
             />
           </div>
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-              Role
+            <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+              Status
             </label>
             <select
-              id="role"
-              value={role}
-              onChange={handleInputChange('role')}
+              id="status"
+              value={status}
+              onChange={handleInputChange('status')}
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
+            >
+              <option value="Active">Active</option>
+              <option value="Off">Off</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
+              User Type
+            </label>
+            <select
+              id="userType"
+              value={userType}
+              onChange={handleInputChange('userType')}
               className="mt-1 block w-full px-4 py-2 border rounded-md"
             >
               <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="Employee">Employee</option>
+              <option value="Admin">Admin</option>
             </select>
+          </div>
+          <div>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phoneNumber"
+              value={phoneNumber}
+              onChange={handleInputChange('phoneNumber')}
+              required
+              className="mt-1 block w-full px-4 py-2 border rounded-md"
+            />
           </div>
           <div>
             <button

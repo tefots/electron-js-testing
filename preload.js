@@ -1,16 +1,13 @@
+// this is IPC handlers
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    signupUser: (user) => ipcRenderer.invoke('signupUser', user),
-    loginUser: (data) => ipcRenderer.invoke('loginUser', data),
-    // Optional: Keep previous CRUD methods (remove if not needed)
-    // createItem: (item) => ipcRenderer.invoke('create-item', item),
-    // readItems: () => ipcRenderer.invoke('read-items'),
-    // updateItem: (item) => ipcRenderer.invoke('update-item', item),
-    // deleteItem: (id) => ipcRenderer.invoke('delete-item', id),
-    on: (channel, callback) => ipcRenderer.on(channel, (event, ...args) => callback(...args)),
+    loginUser: (loginData) => ipcRenderer.invoke('loginUser', loginData), // handles login logic
+    signupUser: (signupData) => ipcRenderer.invoke('signupUser', signupData),// handles signup logic
+    getUsers: () => ipcRenderer.invoke('getUsers'), // handles retrieval of all users
+    deleteAllUsers: () => ipcRenderer.invoke('deleteAllUsers'), // handles deletion of all users
+    deleteUser: (id) => ipcRenderer.invoke("delete-user", id),
 });
-
 
 
 // const { contextBridge, ipcRenderer } = require("electron");
