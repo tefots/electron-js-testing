@@ -29,6 +29,7 @@ export default function LoginForm() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
+  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,14 +43,36 @@ export default function LoginForm() {
 
       if (result.success) {
         setMessage("Login successful!");
+        setMessageType('success');
         setUsername("");
         setPassword("");
-        router.push("/pages/Dashboard"); // Navigate to dashboard on success
+        setTimeout(() => {
+          router.push("/pages/Dashboard");
+          setMessage("");
+          setMessageType('');
+        }, 1000); // 1 second delay before redirect
       } else {
-        setMessage(`Error: ${result.error || "Invalid username or password"}`);
+        setMessage(result.error || "Invalid username or password");
+        setMessageType('error');
+        setUsername("");
+        setPassword("");
       }
     } catch (error) {
-      setMessage(`Error: ${error instanceof Error ? error.message : String(error)}`);
+      setMessage(error instanceof Error ? error.message : String(error));
+      setMessageType('error');
+    }
+  };
+
+  // Clear message when typing starts
+  const handleInputChange = (field: 'username' | 'password') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (message) {
+      setMessage('');
+      setMessageType('');
+    }
+    if (field === 'username') {
+      setUsername(e.target.value);
+    } else {
+      setPassword(e.target.value);
     }
   };
 
@@ -58,6 +81,15 @@ export default function LoginForm() {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
         <form onSubmit={handleSubmit}>
+          {message && (
+            <p 
+              className={`text-center text-sm mb-4 ${
+                messageType === 'error' ? 'text-red-600' : 'text-green-600'
+              }`}
+            >
+              {message}
+            </p>
+          )}
           <div className="mb-4">
             <label
               htmlFor="username"
@@ -69,7 +101,7 @@ export default function LoginForm() {
               type="text"
               id="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleInputChange('username')}
               className="w-full text-start p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -85,7 +117,7 @@ export default function LoginForm() {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handleInputChange('password')}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -96,9 +128,8 @@ export default function LoginForm() {
           >
             Login
           </button>
-          <p className="text-center text-sm text-gray-600 mt-4">{message}</p>
           <div className="mt-6 text-center">
-            Don&apos;t have an account?
+            Don't have an account?
             <Link
               href="/pages/Auth/Signup"
               className="text-center ms-4 text-blue-700 text-lg"
