@@ -4,27 +4,18 @@ import Link from "next/link";
 import { useState } from "react";
 
 // Define the shape of the response from the Electron API
-interface SignupResponse {
+export interface SignupResponse {
   success: boolean;
   id?: number;
   error?: string;
 }
 
 // Define the shape of the user data sent to Electron
-interface UserData {
+export interface UserData {
   username: string;
   email: string;
   password: string;
   role: string;
-}
-
-// Extend the Window interface to include electronAPI
-declare global {
-  interface Window {
-    electronAPI: {
-      signupUser: (user: UserData) => Promise<SignupResponse>;
-    };
-  }
 }
 
 export default function SignupForm() {
@@ -33,6 +24,7 @@ export default function SignupForm() {
   const [password, setPassword] = useState<string>("");
   const [role, setRole] = useState<string>("user");
   const [message, setMessage] = useState<string>("");
+  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,28 +39,54 @@ export default function SignupForm() {
 
       if (result.success) {
         setMessage("User created successfully!");
+        setMessageType('success');
         setUsername("");
         setEmail("");
         setPassword("");
         setRole("user");
       } else {
-        // Handle specific SQLite constraint errors
         if (result.error?.includes("UNIQUE constraint failed: users.email")) {
-          setMessage("Warning! This email is already in use.");
+          setMessage("This email is already in use.");
+          setMessageType('error');
           setUsername("");
           setEmail("");
           setPassword("");
           setRole("user");
         } else if (result.error?.includes("UNIQUE constraint failed: users.username")) {
-          setMessage("Error: This username is already taken.");
+          setMessage("This username is already taken.");
+          setMessageType('error');
         } else {
-          setMessage(`Error: ${result.error || "Unknown error"}`);
+          setMessage(result.error || "Unknown error");
+          setMessageType('error');
         }
       }
     } catch (error) {
-      setMessage(`Error: ${error instanceof Error ? error.message : String(error)}`);
+      setMessage(error instanceof Error ? error.message : String(error));
+      setMessageType('error');
     }
   };
+
+  const handleInputChange = (field: 'username' | 'email' | 'password' | 'role') => 
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      if (message) {
+        setMessage('');
+        setMessageType('');
+      }
+      switch (field) {
+        case 'username':
+          setUsername(e.target.value);
+          break;
+        case 'email':
+          setEmail(e.target.value);
+          break;
+        case 'password':
+          setPassword(e.target.value);
+          break;
+        case 'role':
+          setRole(e.target.value);
+          break;
+      }
+    };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -77,65 +95,62 @@ export default function SignupForm() {
           Sign Up
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+          {message && (
+            <p 
+              className={`text-center text-sm mb-4 ${
+                messageType === 'error' ? 'text-red-600' : 'text-green-600'
+              }`}
             >
+              {message}
+            </p>
+          )}
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Username
             </label>
             <input
               type="text"
               id="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleInputChange('username')}
               required
               className="mt-1 block w-full px-4 py-2 border rounded-md"
             />
           </div>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleInputChange('email')}
               required
               className="mt-1 block w-full px-4 py-2 border rounded-md"
             />
           </div>
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handleInputChange('password')}
               required
               className="mt-1 block w-full px-4 py-2 border rounded-md"
             />
           </div>
           <div>
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
               Role
             </label>
             <select
               id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={handleInputChange('role')}
               className="mt-1 block w-full px-4 py-2 border rounded-md"
             >
               <option value="user">User</option>
@@ -150,7 +165,6 @@ export default function SignupForm() {
               Sign Up
             </button>
           </div>
-          <p className="text-center text-sm text-gray-600">{message}</p>
           <div className="text-center">
             Already have an account?
             <Link href="/pages/Auth/Login" className="text-blue-700 ml-2">

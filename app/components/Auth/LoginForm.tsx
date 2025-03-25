@@ -5,24 +5,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Define the shape of the response from the Electron API
-interface LoginResponse {
+export interface LoginResponse {
   success: boolean;
   error?: string;
 }
 
 // Define the shape of the login data sent to Electron
-interface LoginData {
+export interface LoginData {
   username: string;
   password: string;
-}
-
-// Extend the Window interface to include electronAPI
-declare global {
-  interface Window {
-    electronAPI: {
-      loginUser: (data: LoginData) => Promise<LoginResponse>;
-    };
-  }
 }
 
 export default function LoginForm() {
@@ -50,7 +41,7 @@ export default function LoginForm() {
           router.push("/pages/Dashboard");
           setMessage("");
           setMessageType('');
-        }, 1000); // 1 second delay before redirect
+        }, 1000);
       } else {
         setMessage(result.error || "Invalid username or password");
         setMessageType('error');
@@ -63,7 +54,6 @@ export default function LoginForm() {
     }
   };
 
-  // Clear message when typing starts
   const handleInputChange = (field: 'username' | 'password') => (e: React.ChangeEvent<HTMLInputElement>) => {
     if (message) {
       setMessage('');
@@ -91,10 +81,7 @@ export default function LoginForm() {
             </p>
           )}
           <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-md font-medium text-gray-600 mb-2"
-            >
+            <label htmlFor="username" className="block text-md font-medium text-gray-600 mb-2">
               Username
             </label>
             <input
@@ -107,10 +94,7 @@ export default function LoginForm() {
             />
           </div>
           <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-start text-md font-medium text-gray-600 mb-2"
-            >
+            <label htmlFor="password" className="block text-start text-md font-medium text-gray-600 mb-2">
               Password
             </label>
             <input
@@ -130,10 +114,7 @@ export default function LoginForm() {
           </button>
           <div className="mt-6 text-center">
             Don't have an account?
-            <Link
-              href="/pages/Auth/Signup"
-              className="text-center ms-4 text-blue-700 text-lg"
-            >
+            <Link href="/pages/Auth/Signup" className="text-center ms-4 text-blue-700 text-lg">
               Sign up here
             </Link>
           </div>
