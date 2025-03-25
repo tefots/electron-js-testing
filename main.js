@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const db = require('./db');
+const bcrypt = require('bcrypt'); // Add bcrypt
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -25,43 +26,59 @@ app.on('window-all-closed', () => {
 
 // Login user IPC Handler
 ipcMain.handle('loginUser', async (event, { username, password }) => {
-  return new Promise((resolve) => {
-      db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, row) => {
-          if (err) {
-              resolve({ success: false, error: err.message });
-          } else if (!row) {
-              resolve({ success: false, error: "Invalid username or password" });
-          } else {
-              resolve({ 
-                  success: true,
-                  user: {
-                      name: row.username, // Using username as name
-                      email: row.email,
-                      role: row.role,
-                  }
-              });
-          }
-      });
-  });
-});
-
-// Signup User IPC Handler (unchanged)
-ipcMain.handle('signupUser', async (event, { username, email, password, role }) => {
     return new Promise((resolve) => {
-        db.run(
-            'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-            [username, email, password, role || 'user'],
-            function (err) {
-                if (err) {
-                    resolve({ success: false, error: err.message });
-                } else {
-                    resolve({ success: true, id: this.lastID });
-                }
+        db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
+            if (err) {
+                resolve({ success: false, error: err.message });
+            } else if (!row) {
+                resolve({ success: false, error: "Invalid username or password" });
+            } else {
+                // Compare provided password with stored hash
+                bcrypt.compare(password, row.password, (err, result) => {
+                    if (err) {
+                        resolve({ success: false, error: err.message });
+                    } else if (result) {
+                        resolve({
+                            success: true,
+                            user: {
+                                name: row.username,
+                                email: row.email,
+                                role: row.role || 'user',
+                            },
+                        });
+                    } else {
+                        resolve({ success: false, error: "Invalid username or password" });
+                    }
+                });
             }
-        );
+        });
     });
 });
 
+// Signup User IPC Handler
+ipcMain.handle('signupUser', async (event, { username, email, password, role }) => {
+    return new Promise((resolve) => {
+        // Hash the password before storing
+        bcrypt.hash(password, 8, (err, hashedPassword) => {
+            if (err) {
+                resolve({ success: false, error: err.message });
+                return;
+            }
+
+            db.run(
+                'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+                [username, email, hashedPassword, role || 'user'],
+                function (err) {
+                    if (err) {
+                        resolve({ success: false, error: err.message });
+                    } else {
+                        resolve({ success: true, id: this.lastID });
+                    }
+                }
+            );
+        });
+    });
+});
 // // Optional: Keep previous CRUD handlers for "items" (remove if not needed)
 // ipcMain.on('create-item', (event, { name, description }) => {
 //     db.run('INSERT INTO items (name, description) VALUES (?, ?)', [name, description], function (err) {
