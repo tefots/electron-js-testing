@@ -11,5 +11,4 @@ declare global {
   }
 }
 
-// Ensure this file is included in tsconfig.json
 export {};
