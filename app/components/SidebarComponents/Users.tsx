@@ -1,5 +1,5 @@
 "use client";
-
+import { FaUserPlus, FaTrash } from 'react-icons/fa'; // You'll need to install react-icons if not already
 import { DashboardLayout } from '../DashboardComponents/DashboardLayout';
 import Link from 'next/link';
 import { useState, useEffect, SetStateAction } from 'react';
@@ -15,11 +15,6 @@ interface User {
   email: string;
   phoneNumber: string;
 }
-
-
-
-
-
 
 export default function UsersPage() {
   const [loading, setLoading] = useState(true);
@@ -46,11 +41,12 @@ export default function UsersPage() {
 
   // Delete all users
   const handleDeleteAll = async () => {
-    if (confirm('Are you sure you want to delete all users?')) {
+    if (confirm('Are you sure you want to delete all non-Admin users?')) {
       try {
         const result = await window.electronAPI.deleteAllUsers();
         if (result.success) {
-          setUsers([]);
+          // Keep only Admin users in the state
+          setUsers(users.filter(user => user.userType === 'Admin'));
         } else {
           console.error('Error deleting users:', result.error);
         }
@@ -111,17 +107,21 @@ export default function UsersPage() {
           <div className="flex justify-end items-end mb-4 flex-col sm:flex-row">
             <Link
               href={'/pages/Users/add'}
-              className="bg-gray-800 text-white text-lg px-6 mr-3 py-2 rounded-3xl shadow hover:bg-blue-700 transition duration-300 mb-4 sm:mb-0"
+              className="bg-gray-800 text-white text-lg px-6 mr-3 py-2 rounded-3xl shadow hover:bg-blue-700 transition duration-300 mb-4 sm:mb-0 flex items-center justify-center"
             >
-              + Add User
+              {/* Show icon only on mobile, both icon and text on desktop */}
+              <FaUserPlus className="sm:mr-2 md:hidden" />
+              <span className="hidden sm:inline">+Add</span>
             </Link>
             <button
               onClick={handleDeleteAll}
-              className="bg-red-600 text-white p-4 mr-5 py-2 rounded-3xl shadow hover:bg-red-700 transition duration-300"
+              className="bg-red-600 text-white p-4 mr-5 py-2 rounded-3xl shadow hover:bg-red-700 transition duration-300 flex items-center justify-center"
             >
-              Delete All Users
-            </button>
-          </div>
+            {/* Show icon only on mobile, both icon and text on desktop */}
+            <FaTrash className="sm:mr-2 md:hidden" />
+            <span className="hidden sm:inline">Delete All</span>
+          </button>
+</div>
         </div>
         <div className="overflow-x-auto mt-5 mx-5">
           {loading ? (

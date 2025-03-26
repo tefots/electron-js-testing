@@ -21,7 +21,7 @@ declare global {
         error?: string;
       }>;
       deleteAllUsers: () => Promise<{ success: boolean; error?: string }>;
-      deleteUser: (data: { id: number }) => Promise<{ success: boolean; error?: string }>; // delete single user
+      deleteUser: (data: { id: number }) => Promise<{ success: boolean; error?: string }>; // delete single user except admins
 
     };
   }

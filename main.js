@@ -91,9 +91,22 @@ ipcMain.handle('getUsers', async () => {
 });
 
 // Delete All Users IPC Handler
+// ipcMain.handle('deleteAllUsers', async () => {
+//     return new Promise((resolve) => {
+//         db.run('DELETE FROM users', (err) => {
+//             if (err) {
+//                 resolve({ success: false, error: err.message });
+//             } else {
+//                 resolve({ success: true });
+//             }
+//         });
+//     });
+// });
+
+// Updated: Delete All Users (except Admins)
 ipcMain.handle('deleteAllUsers', async () => {
     return new Promise((resolve) => {
-        db.run('DELETE FROM users', (err) => {
+        db.run("DELETE FROM users WHERE userType != 'Admin'", (err) => {
             if (err) {
                 resolve({ success: false, error: err.message });
             } else {
@@ -106,7 +119,7 @@ ipcMain.handle('deleteAllUsers', async () => {
 // Delete single User  IPC Handler
 ipcMain.handle('deleteUser', async (event, { id }) => {
     return new Promise((resolve) => {
-        db.run('DELETE FROM users WHERE id = ?', [id], function (err) {
+        db.run("DELETE FROM users WHERE id = ? AND userType != 'Admin'", [id], function (err) {
             if (err) {
                 resolve({ success: false, error: err.message });
             } else if (this.changes === 0) {
