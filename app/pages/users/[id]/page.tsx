@@ -47,8 +47,11 @@ export default function UserDetails() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">User Details</h1>
-      <div className="bg-white p-4 rounded shadow">
+      <div className='h-12 mt-2 text-center  rounded shadow items-center bg-green-400'>
+     
+        <h2 className='text-xl mt-4 text-white-200 font-semibold'>User Details</h2>
+      </div>
+        <div className="bg-white p-4 rounded  shadow">
         <p><strong>ID:</strong> {user.id}</p>
         <p><strong>First Name:</strong> {user.firstName}</p>
         <p><strong>Last Name:</strong> {user.lastName}</p>

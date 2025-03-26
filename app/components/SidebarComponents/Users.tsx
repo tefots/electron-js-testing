@@ -152,7 +152,7 @@ export default function UsersPage() {
                       <td className="px-4 py-2 text-left border-b">{item.email}</td>
                       <td className="px-4 py-2 text-left border-b">{item.phoneNumber}</td>
                       <td className="px-4 py-2 text-left border-b">
-                        <Link href={`/pages/users/details/${item.id}`} className="text-blue-500">
+                        <Link href={`/pages/users/${item.id}`} className="text-blue-500">
                           Details
                         </Link>
                         <button
