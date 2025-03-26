@@ -1,7 +1,8 @@
+// app/pages/users/details/[id].tsx
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation'; // Use useParams 
 
 interface User {
   id: number;
@@ -14,8 +15,8 @@ interface User {
 }
 
 export default function UserDetails() {
-  const router = useRouter();
-  const { id } = router.query; // Get the id from the URL
+  const params = useParams(); // Get dynamic params
+  const { id } = params; // Extract id from params
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -57,7 +58,7 @@ export default function UserDetails() {
         <p><strong>Phone Number:</strong> {user.phoneNumber}</p>
       </div>
       <button
-        onClick={() => router.push('/pages/Users')}
+        onClick={() => window.history.back()} // Simple back navigation
         className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
       >
         Back to Users
