@@ -106,7 +106,7 @@ export default function UsersPage() {
           {/* Action buttons */}
           <div className="flex justify-end items-end mb-4 flex-col sm:flex-row">
             <Link
-              href={'/pages/Users/add'}
+              href={'/pages/users/add'}
               className="bg-gray-800 text-white text-lg px-6 mr-3 py-2 rounded-3xl shadow hover:bg-blue-700 transition duration-300 mb-4 sm:mb-0 flex items-center justify-center"
             >
               {/* Show icon only on mobile, both icon and text on desktop */}
@@ -151,13 +151,13 @@ export default function UsersPage() {
                       <td className="px-4 py-2 text-left border-b">{item.userType}</td>
                       <td className="px-4 py-2 text-left border-b">{item.email}</td>
                       <td className="px-4 py-2 text-left border-b">{item.phoneNumber}</td>
-                      <td className="px-4 py-2 text-left border-b">
+                      <td className="px-4 py-2 text-left border-b md:space-x-5 ">
                         <Link href={`/pages/users/${item.id}`} className="text-blue-500">
                           Details
                         </Link>
                         <button
                         onClick={() => handleDelete(item.id)}
-                        className="ms-4 text-red-500">Delete</button>
+                        className=" text-red-500">Delete</button>
                       </td>
                     </tr>
                   ))
