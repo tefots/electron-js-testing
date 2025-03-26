@@ -93,7 +93,7 @@ export default function UsersPage() {
         <div className="flex md:flex-row flex-row justify-between py-2">
           <h1 className="text-start mx-5 text-2xl font-bold">LNS Users</h1>
           {/* Search input */}
-          <div>
+          <div className="flex">
             <label>Search User</label>
             <input
               type="text"
