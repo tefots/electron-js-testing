@@ -21,6 +21,7 @@ export function DashboardSidebar() {
         isOpen ? "w-64" : "w-16"
       } p-4 h-screen transition-all duration-300`}
     >
+      <div className="flex space-x-5">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -28,7 +29,11 @@ export function DashboardSidebar() {
       >
         <Menu size={24} />
       </button>
+      <div className="">
+      <h1 className="ms-5">Logo</h1>
+      </div>
 
+      </div>
       <div className={`${isOpen ? "block" : "hidden"} text-2xl font-bold mb-8`}>
         Admin Dashboard
       </div>

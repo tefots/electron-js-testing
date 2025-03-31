@@ -13,10 +13,10 @@ export default function Welcome() {
     >
       {/* Overlay for better readability */}
       <div className="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
-
+      {/* container */}
       <div className="relative z-10 container mx-auto px-6 text-center">
         {/* Main Heading */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-blue-200 mb-4">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-blue-100 mb-4">
           Welcome to Lesotho Nursery Shop</h1>
 
         {/* Subheading */}
@@ -27,7 +27,7 @@ export default function Welcome() {
         {/* Call-to-Action Button */}
         <Link
           href="/pages/Auth"
-          className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-blue-600 text-white font-semibold text-sm sm:text-base rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-300"
+          className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-green-600 text-white font-semibold text-sm sm:text-base rounded-lg shadow-lg hover:bg-gray-500 transition-all duration-300"
         >
           Get Started
         </Link>
