@@ -7,6 +7,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getUsers: () => ipcRenderer.invoke('getUsers'), // handles retrieval of all users
     deleteAllUsers: () => ipcRenderer.invoke('deleteAllUsers'), // handles deletion of all users
     deleteUser: (id) => ipcRenderer.invoke("delete-user", id),
+
+    // products
+    addProduct: (addProductData) => ipcRenderer.invoke('addProduct', addProductData), // this handles addition of products
+    
 });
 
 // const { contextBridge, ipcRenderer } = require("electron");

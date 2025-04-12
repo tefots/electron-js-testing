@@ -24,7 +24,7 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-// Login user IPC Handler
+// Login user IPC Handler 
 ipcMain.handle('loginUser', async (event, { username, password }) => {
     return new Promise((resolve) => {
         db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
@@ -130,3 +130,26 @@ ipcMain.handle('deleteUser', async (event, { id }) => {
         });
     });
 });
+
+
+// ===========================================================================
+//                  PRODUCTS HANDLERS
+// ===========================================================================
+
+// logic to add product
+ipcMain.handle('addProduct', async (event, {productName, quantity, price, image}) => {
+    return new Promise((resolve) => {
+        db.run(
+            'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)', 
+            [productName, quantity, price, image],
+            function (err) {
+                if (err) {
+                    resolve({ success: false, error: err.message });
+                } else {
+                    resolve({ success: true, id: this.lastID });
+                }
+             }
+        );
+    });
+    });
+    
