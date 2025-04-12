@@ -1,48 +1,49 @@
+// app/pages/Auth/Login/page.tsx
 "use client";
 
-import Link from "next/link";
-import React, { useState } from 'react';
-import LoginForm from '../../../components/Auth/LoginForm';
-import { checkCredentials, getUser, clearUser } from '../../../utils/auth';
+import React, { useState, useEffect } from "react";
+import LoginForm from "../../../components/Auth/LoginForm";
 
 const LoginPage: React.FC = () => {
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<{ name: string } | null>(null);
 
-  const handleLogin = (username: string, password: string) => {
-    if (checkCredentials(username, password)) {
-      setUser(username);
-      setErrorMessage('');
-    } else {
-      setErrorMessage('Invalid credentials');
+  useEffect(() => {
+    // Check localStorage for logged-in user
+    const storedUser = localStorage.getItem("loggedInUser");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing stored user:", error);
+        localStorage.removeItem("loggedInUser"); // Clear invalid data
+      }
     }
-  };
+  }, []);
 
   const handleLogout = () => {
-    clearUser();
+    localStorage.removeItem("loggedInUser");
     setUser(null);
   };
-
-  const storedUser = getUser();
-
-  if (storedUser && !user) {
-    // Automatically log in the user if data exists in localStorage
-    setUser(storedUser.username);
-  }
 
   return (
     <div>
       {user ? (
-        <div>
-          <h1>Welcome, {user}!</h1>
-          <button onClick={handleLogout}>Logout</button>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full text-center">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+              Welcome, {user.name}!
+            </h1>
+            <button
+              onClick={handleLogout}
+              className="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="">
-          {/* <h1 className="bg-[#1c4e80] text-xl text-white  text-center font-semibold ">Login Page</h1> */}
-          <LoginForm onLogin={handleLogin} />
-          {errorMessage && <p>{errorMessage}</p>}
-           </div>
+        <LoginForm />
       )}
     </div>
   );

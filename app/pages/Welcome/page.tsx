@@ -9,7 +9,6 @@ export default function Welcome() {
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        
       }}
     >
       {/* Overlay for better readability */}

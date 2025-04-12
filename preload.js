@@ -9,7 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     deleteUser: (id) => ipcRenderer.invoke("delete-user", id),
 });
 
-
 // const { contextBridge, ipcRenderer } = require("electron");
 
 // contextBridge.exposeInMainWorld("api", {
