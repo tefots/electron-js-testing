@@ -1,5 +1,6 @@
 "use client";
-
+import Image from "next/image";
+import logo from "./../../assets/logo.jpg"
 import {
   Home,
   Users,
@@ -30,7 +31,13 @@ export function DashboardSidebar() {
         <Menu size={24} />
       </button>
       <div className="">
-      <h1 className="ms-5">Logo</h1>
+        <Image
+        src ={logo} 
+        width ={50}
+        height={50}
+        alt={'logo'}
+        className="rounded-full mb-6 "
+        />
       </div>
 
       </div>
