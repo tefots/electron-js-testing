@@ -251,6 +251,7 @@ export default function Products() {
                 image={product.imageURL || "/placeholder.jpg"}
                 title={product.productName}
                 description={product.description}
+                quantity={product.quantity}
                 pricePerProduct={product.price.toFixed(1)}
                 onDelete={handleDelete}
               />

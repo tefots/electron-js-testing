@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/router";
+import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/app/components/DashboardComponents/DashboardLayout";
 
@@ -16,7 +16,7 @@ interface Product {
 
 export default function EditProduct() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams(); // Get the dynamic id from the URL
   const [product, setProduct] = useState<Product | null>(null);
   const [productName, setProductName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
