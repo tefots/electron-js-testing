@@ -34,8 +34,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
         price REAL NOT NULL,
         quantity INTEGER NOT NULL DEFAULT 0,
         description TEXT,
-        imagePath TEXT, 
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        imageURL TEXT, 
+        creationDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
     },
     {

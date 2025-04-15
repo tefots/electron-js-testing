@@ -1,51 +1,48 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/app/components/DashboardComponents/DashboardLayout";
 import ProductsPage from "@/app/components/SidebarComponents/Products";
 import ProductsCards from "@/app/components/SidebarComponents/productsCards";
 import { Book, Flower, Flower2, Trees } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
+// Define product interface to match database schema
+interface Product {
+  id: number;
+  productName: string;
+  category: string;
+  price: number;
+  quantity: number;
+  description: string;
+  imageURL: string;
+}
 
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
-  // Define product data
-  const products = [
-    {
-      image: "/n1.jpg",
-      title: "Peach Trees",
-      description: "Delicious fruit-bearing tree",
-      category: "Fruit Trees",
-      quantity: 2,
-      pricePerProduct: "M99",
-    },
-    {
-      image: "/n1.jpg",
-      title: "Maple Tree",
-      description: "Beautiful forest tree",
-      category: "Forest",
-      quantity: 23,
-      pricePerProduct: "M80",
-    },
-    {
-      image: "/n3.jpeg",
-      title: "Roses",
-      description: "Elegant flowers",
-      category: "Flowers",
-      quantity: 232,
-      pricePerProduct: "M70",
-    },
-    {
-      image: "/n1.jpg",
-      title: "Lavender",
-      description: "Fragrant herb",
-      category: "Herbs",
-      quantity: 40,
-      pricePerProduct: "M75",
-    },
-  ];
+  // Fetch products from database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const result = await window.electronAPI.getProducts();
+        if (result.success) {
+          setProducts(result.products);
+        } else {
+          setError(result.error || "Failed to fetch products");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Filter products based on active category
   const filteredProducts =
@@ -59,89 +56,83 @@ export default function Products() {
   };
 
   return (
-    <>
-      <DashboardLayout>
-        <div className="flex md:flex-row sm:flex-col justify-between">
-        <div className="mx-2 flex flex-col justify-start">
-          <h1 className="text-2xl font-bold mb-4">Products</h1>
-          <p className="text-lg">Manage your product inventory here.</p>
+    <DashboardLayout>
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mx-2 sm:mx-4">
+        <div className="flex flex-col justify-start">
+          <h1 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Products</h1>
+          <p className="text-base sm:text-lg text-gray-700">Manage your product inventory here.</p>
         </div>
         {/* Add Product Button */}
-        <div className="flex sm:justify-start justify-end mt-4 ">
-            <Link
-                className="mx-2  bg-slate-500 text-white p-3 rounded-xl"
-                href={"/pages/Products/add"}
-                passHref
-            >
-                + Add Product
-            </Link>
-        
+        <div className="flex justify-start md:justify-end mt-2 md:mt-0">
+          <Link
+            className="bg-slate-500 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl text-sm sm:text-base hover:bg-slate-600 transition-colors"
+            href={"/pages/Products/add"}
+            passHref>
+            + Add Product
+          </Link>
         </div>
-        </div>
-        {/* categories header*/}
-        <div className="mx-2 mt-5">
-            <h1 className="font-semibold text-xl">Categories</h1>
-        </div>
+      </div>
+      {/* Categories header */}
+      <div className="mx-2 sm:mx-4 mt-5">
+        <h1 className="font-semibold text-xl">Categories</h1>
+      </div>
 
-        {/* filters */}
-        <div className="flex md:flex-row font-medium gap-4 mt-4">
-          <div
-            className={`cursor-pointer p-3 rounded-lg ${
-              activeCategory === "All" ? "bg-green-400 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => handleCategoryClick("All")}
-          >
-            All
-          </div>
-          <ProductsPage
-            icon={<Book size={20} className="text-green-400" />}
-            title="Fruit Trees"
-            onClick={() => handleCategoryClick("Fruit Trees")}
-            isActive={activeCategory === "Fruit Trees"}
-          />
-          <ProductsPage
-            icon={<Trees size={20} className="text-green-400" />}
-            title="Forest"
-            onClick={() => handleCategoryClick("Forest")}
-            isActive={activeCategory === "Forest"}
-          />
-          <ProductsPage
-            icon={<Flower size={20} className="text-green-400" />}
-            title="Flowers"
-            onClick={() => handleCategoryClick("Flowers")}
-            isActive={activeCategory === "Flowers"}
-          />
-          <ProductsPage
-            icon={<Flower2 size={20} className="text-green-400" />}
-            title="Herbs"
-            onClick={() => handleCategoryClick("Herbs")}
-            isActive={activeCategory === "Herbs"}
-          />
+      {/* Filters */}
+      <div className="flex md:flex-row font-medium gap-4 mt-4 mx-2 sm:mx-4">
+        <div
+          className={`cursor-pointer p-3 rounded-lg ${
+            activeCategory === "All" ? "bg-green-400 text-white" : "bg-gray-200"
+          }`}
+          onClick={() => handleCategoryClick("All")}
+        >
+          All
         </div>
+        <ProductsPage
+          icon={<Book size={20} className="text-green-400" />}
+          title="Fruit Trees"
+          onClick={() => handleCategoryClick("Fruit Trees")}
+          isActive={activeCategory === "Fruit Trees"}
+        />
+        <ProductsPage
+          icon={<Trees size={20} className="text-green-400" />}
+          title="Forest"
+          onClick={() => handleCategoryClick("Forest")}
+          isActive={activeCategory === "Forest"}
+        />
+        <ProductsPage
+          icon={<Flower size={20} className="text-green-400" />}
+          title="Flowers"
+          onClick={() => handleCategoryClick("Flowers")}
+          isActive={activeCategory === "Flowers"}
+        />
+        <ProductsPage
+          icon={<Flower2 size={20} className="text-green-400" />}
+          title="Herbs"
+          onClick={() => handleCategoryClick("Herbs")}
+          isActive={activeCategory === "Herbs"}
+        />
+      </div>
 
-        
-
-        {/* Product Cards */}
-        <div className="grid md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-2 mt-4 max-w-5xl gap-4">
-          {filteredProducts.map((product, index) => (
+      {/* Product Cards */}
+      <div className="mt-4 mx-2 sm:mx-4">
+        {loading && <p className="text-center text-gray-600">Loading products...</p>}
+        {error && <p className="text-center text-red-600">{error}</p>}
+        {!loading && !error && filteredProducts.length === 0 && (
+          <p className="text-center text-gray-600">No products found.</p>
+        )}
+        <div className="grid md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-2 max-w-5xl gap-4">
+          {filteredProducts.map((product) => (
             <ProductsCards
-              key={index}
-              image={
-                <Image
-                  src={product.image}
-                  width={200}
-                  height={200}
-                  alt={`Image of ${product.title}`}
-                />
-              }
-              title={product.title}
+              key={product.id}
+              image={product.imageURL || "/placeholder.jpg"}
+              title={product.productName}
               description={product.description}
               quantity={product.quantity}
-              pricePerProduct={product.pricePerProduct}
+              pricePerProduct={`M${product.price.toFixed(2)}`}
             />
           ))}
         </div>
-      </DashboardLayout>
-    </>
+      </div>
+    </DashboardLayout>
   );
 }
