@@ -140,7 +140,7 @@ ipcMain.handle('deleteUser', async (event, { id }) => {
 ipcMain.handle('addProduct', async (event, {productName, quantity, price, image}) => {
     return new Promise((resolve) => {
         db.run(
-            'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)', 
+            'INSERT INTO products (productName, quantity, price, imagePath) VALUES (?, ?, ?, ?)', 
             [productName, quantity, price, image],
             function (err) {
                 if (err) {

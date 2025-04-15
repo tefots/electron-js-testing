@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 // Define the shape of the response from the Electron API
@@ -23,6 +22,7 @@ export interface UserData {
 }
 
 export default function SignupForm() {
+
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [username, setUsername] = useState<string>("");

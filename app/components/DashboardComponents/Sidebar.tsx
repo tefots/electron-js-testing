@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import logo from "./../../assets/logo.jpg";
+import logo from "./../../../public/logo.jpg";
 import {
   Home,
   Users,

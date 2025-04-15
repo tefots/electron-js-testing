@@ -14,7 +14,7 @@ export default function Products() {
   // Define product data
   const products = [
     {
-      image: "/m2.png",
+      image: "/n1.jpg",
       title: "Peach Trees",
       description: "Delicious fruit-bearing tree",
       category: "Fruit Trees",
@@ -61,29 +61,30 @@ export default function Products() {
   return (
     <>
       <DashboardLayout>
-        <div className="flex justify-between">
+        <div className="flex md:flex-row sm:flex-col justify-between">
         <div className="mx-2 flex flex-col justify-start">
           <h1 className="text-2xl font-bold mb-4">Products</h1>
           <p className="text-lg">Manage your product inventory here.</p>
         </div>
         {/* Add Product Button */}
-        <div className="flex justify-end items-center  mt-4 ">
+        <div className="flex sm:justify-start justify-end mt-4 ">
             <Link
-                className="mx-6  bg-slate-500 text-white p-3 rounded-xl"
+                className="mx-2  bg-slate-500 text-white p-3 rounded-xl"
                 href={"/pages/Products/add"}
                 passHref
             >
                 + Add Product
             </Link>
-            </div>
+        
         </div>
-        {/* categories */}
-        <div className="mx-2">
+        </div>
+        {/* categories header*/}
+        <div className="mx-2 mt-5">
             <h1 className="font-semibold text-xl">Categories</h1>
         </div>
 
-        {/* Categories */}
-        <div className="flex flex-wrap font-medium gap-4 mt-4">
+        {/* filters */}
+        <div className="flex md:flex-row font-medium gap-4 mt-4">
           <div
             className={`cursor-pointer p-3 rounded-lg ${
               activeCategory === "All" ? "bg-green-400 text-white" : "bg-gray-200"
@@ -121,7 +122,7 @@ export default function Products() {
         
 
         {/* Product Cards */}
-        <div className="grid md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-1 mt-4 max-w-5xl gap-4">
+        <div className="grid md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-2 mt-4 max-w-5xl gap-4">
           {filteredProducts.map((product, index) => (
             <ProductsCards
               key={index}
