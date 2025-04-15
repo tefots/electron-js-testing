@@ -202,3 +202,90 @@ ipcMain.handle("getProducts", async () => {
       );
     });
   });
+
+
+
+// Delete Product IPC Handler
+ipcMain.handle("deleteProduct", async (event, { id }) => {
+    return new Promise((resolve) => {
+      // First, get the product to retrieve its imageURL
+      db.get("SELECT imageURL FROM products WHERE id = ?", [id], (err, row) => {
+        if (err) {
+          resolve({ success: false, error: err.message });
+          return;
+        }
+        if (!row) {
+          resolve({ success: false, error: "Product not found" });
+          return;
+        }
+  
+        // Delete the product from the database
+        db.run("DELETE FROM products WHERE id = ?", [id], function (err) {
+          if (err) {
+            resolve({ success: false, error: err.message });
+            return;
+          }
+          if (this.changes === 0) {
+            resolve({ success: false, error: "Product not found" });
+            return;
+          }
+  
+          // Optionally delete the associated image file
+          if (row.imageURL) {
+            const imagePath = path.join(__dirname, "public", row.imageURL);
+            fs.unlink(imagePath).catch((err) => {
+              console.error("Failed to delete image file:", err);
+            });
+          }
+  
+          resolve({ success: true, imageURL: row.imageURL });
+        });
+      });
+    });
+  });
+
+  // Update Product IPC Handler
+ipcMain.handle(
+    "updateProduct",
+    async (event, { id, productName, category, price, quantity, description, imageURL }) => {
+      return new Promise((resolve) => {
+        // First, get the current product to retrieve its existing imageURL
+        db.get("SELECT imageURL FROM products WHERE id = ?", [id], (err, row) => {
+          if (err) {
+            resolve({ success: false, error: err.message });
+            return;
+          }
+          if (!row) {
+            resolve({ success: false, error: "Product not found" });
+            return;
+          }
+  
+          // Update the product in the database
+          db.run(
+            "UPDATE products SET productName = ?, category = ?, price = ?, quantity = ?, description = ?, imageURL = ? WHERE id = ?",
+            [productName, category, price, quantity, description, imageURL || row.imageURL, id],
+            function (err) {
+              if (err) {
+                resolve({ success: false, error: err.message });
+                return;
+              }
+              if (this.changes === 0) {
+                resolve({ success: false, error: "Product not found" });
+                return;
+              }
+  
+              // If a new image was uploaded, delete the old image file
+              if (imageURL && row.imageURL && imageURL !== row.imageURL) {
+                const oldImagePath = path.join(__dirname, "public", row.imageURL);
+                fs.unlink(oldImagePath).catch((err) => {
+                  console.error("Failed to delete old image file:", err);
+                });
+              }
+  
+              resolve({ success: true });
+            }
+          );
+        });
+      });
+    }
+  );
