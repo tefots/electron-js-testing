@@ -1,6 +1,3 @@
-// components/Auth/LoginForm.tsx
-"use client";
-
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +8,7 @@ export interface LoginResponse {
     name: string;
     email: string;
     role: string;
+    id: number;
   };
   error?: string;
 }
@@ -41,13 +39,14 @@ export default function LoginForm() {
         setMessageType("success");
         // Store user data in localStorage
         localStorage.setItem("loggedInUser", JSON.stringify(result.user));
+        console.log("Stored in localStorage:", result.user); // Debug log
         setUsername("");
         setPassword("");
         setTimeout(() => {
           router.push("/pages/Dashboard");
           setMessage("");
           setMessageType("");
-        }, 800);
+        }, 200);
       } else {
         setMessage(result.error || "Invalid username or password");
         setMessageType("error");
@@ -129,7 +128,7 @@ export default function LoginForm() {
             Login
           </button>
           <div className="mt-6 text-center">
-            Don&apos;t have an account?
+            Don't have an account?
             <Link
               href="/pages/Auth/Signup"
               className="text-center ms-4 text-blue-700 text-lg"

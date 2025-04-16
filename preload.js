@@ -20,5 +20,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateProduct: (productData) => ipcRenderer.invoke("updateProduct", productData),
 
   // POS, ( transactions)
-  insertTransactions: (transactions) => ipcRenderer.invoke("insertTransaction", transactions),
+  insertTransaction: (transactions) => ipcRenderer.invoke("insert-transaction", transactions),
 });

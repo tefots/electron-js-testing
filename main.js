@@ -32,33 +32,38 @@ app.on("window-all-closed", () => {
 });
 
 // Login user IPC Handler
+
 ipcMain.handle("loginUser", async (event, { username, password }) => {
-  return new Promise((resolve) => {
-    db.get("SELECT * FROM users WHERE username = ?", [username], (err, row) => {
-      if (err) {
-        resolve({ success: false, error: err.message });
-      } else if (!row) {
-        resolve({ success: false, error: "Invalid username or password" });
-      } else {
-        bcrypt.compare(password, row.password, (err, result) => {
-          if (err) {
-            resolve({ success: false, error: err.message });
-          } else if (result) {
-            resolve({
-              success: true,
-              user: {
-                name: row.username,
-                email: row.email,
-                role: row.userType || "user",
-              },
-            });
-          } else {
-            resolve({ success: false, error: "Invalid username or password" });
-          }
-        });
-      }
+  try {
+    const user = await new Promise((resolve, reject) => {
+      db.get(
+        `SELECT id, firstName, lastName, email, username, password, userType FROM users WHERE username = ?`,
+        [username],
+        (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        }
+      );
     });
-  });
+    if (!user) {
+      return { success: false, error: "User not found" };
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return { success: false, error: "Invalid password" };
+    }
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        role: user.userType,
+      },
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 // Signup User IPC Handler
@@ -293,36 +298,39 @@ ipcMain.handle(
   // ==============================================
 
   // Add transaction IPC Handler
-ipcMain.handle(
-  "insertTransaction",
-  async (event, {
-    items,
-    subtotal,
-    discount,
-    total,
-    gst,
-    paymentMethod,
-    amountPaid,
-    change,
-    customerName,
-    phoneNumber,
-    cardNumber,
-    transactionDate,
-    loggedInUser
-    
-    }) => {
-    return new Promise((resolve) => {
+// IPC handler for inserting transactions
+ipcMain.handle('insert-transaction', async (event, transaction) => {
+  try {
+    await new Promise((resolve, reject) => {
       db.run(
-        "INSERT INTO products (Items,Subtotal,Discount,Total,GST,PaymentMethod,AmountPaid,Change,CustomerNames,PhoneNumber,CardNumber,TransactionDate,LoggedInUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [items,subtotal,discount,total,gst,paymentMethod,amountPaid,change,customerName,phoneNumber,cardNumber,transactionDate,loggedInUser],
+        `INSERT INTO transactions (items, subtotal, discount, total, gst, paymentMethod, amountPaid, change, customerName, phoneNumber, cardNumber, transactionDate, loggedInUser)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          transaction.items,
+          transaction.subtotal,
+          transaction.discount,
+          transaction.total,
+          transaction.gst,
+          transaction.paymentMethod,
+          transaction.amountPaid,
+          transaction.change,
+          transaction.customerName,
+          transaction.phoneNumber,
+          transaction.cardNumber,
+          transaction.transactionDate,
+          transaction.loggedInUser,
+        ],
         function (err) {
           if (err) {
-            resolve({ success: false, error: err.message });
+            reject(err);
           } else {
-            resolve({ success: true, id: this.lastID });
+            resolve(this.lastID);
           }
         }
       );
     });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
-);
+});

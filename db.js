@@ -3,12 +3,15 @@ const path = require("path");
 
 const dbPath = path.join(__dirname, "mydb.sqlite");
 const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error("Error opening database:", err.message);
-    return;
-  }
-  console.log("Connected to SQLite database.");
 
+    if (err) {
+      console.error("Error opening database:", err.message);
+      return;
+    }
+    console.log("Connected to SQLite database.");
+    db.run("PRAGMA foreign_keys = ON;"); // Enable foreign keys
+    // ... rest of the code
+    
   // Define table schemas
   const tables = [
     {
@@ -38,32 +41,29 @@ const db = new sqlite3.Database(dbPath, (err) => {
         creationDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
     },
-    { dummy: `Items,Subtotal,Discount,Total,GST,PaymentMethod,
-      AmountPaid,Change,CustomerNames,PhoneNumber,CardNumber,TransactionDate,LoggedInUser`,
+    {
       name: "transactions",
       query: `CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Items INTEGER NOT NULL,
-        Subtotal INTEGER NOT NULL,
-        Discount INTEGER NOT NULL,
-        TotalPrice REAL NOT NULL,
-        GST INTEGER NOT NULL,
-        PaymentMethod TEXT NOT NULL,
-        AmountPaid REAL NOT NULL,
-        Chnage INTEGER NOT NULL,
-        CustomerNames TEXT,
-        PhoneNumber INTEGER,
-        CardNumber INTEGER,
-        TransactionDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        LoggeInUser INTEGER NOT NULL,
-        FOREIGN KEY (LoggeInUser) REFERENCES users(id) ON DELETE CASCADE,
-
+        items TEXT NOT NULL, -- JSON string of [{ productName, quantity }]
+        subtotal REAL NOT NULL,
+        discount REAL NOT NULL,
+        total REAL NOT NULL,
+        gst REAL NOT NULL,
+        paymentMethod TEXT NOT NULL CHECK(paymentMethod IN ('cash', 'card', 'digital')),
+        amountPaid REAL NOT NULL,
+        change REAL NOT NULL,
+        customerName TEXT,
+        phoneNumber TEXT,
+        cardNumber TEXT,
+        transactionDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        loggedInUser INTEGER NOT NULL,
+        FOREIGN KEY (loggedInUser) REFERENCES users(id) ON DELETE CASCADE
       )`,
-      //        FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
     },
   ];
 
-  // Create tables sequentially to handle dependencies (e.g., transactions references users, products)
+  // Create tables sequentially to handle dependencies (e.g., transactions references users)
   db.serialize(() => {
     tables.forEach((table) => {
       db.run(table.query, (err) => {

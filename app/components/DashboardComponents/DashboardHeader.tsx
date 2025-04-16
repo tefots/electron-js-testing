@@ -8,16 +8,20 @@ export function DashboardHeader() {
 
   const [showUserOverlay, setShowUserOverlay] = useState(false);
   const [user, setUser] = useState<{
+    id: number;
     name: string;
     email: string;
     role: string;
+
   } | null>(null);
 
   // Load user data from localStorage when component mounts
   useEffect(() => {
     const storedUser = localStorage.getItem("loggedInUser");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Parsed user from localStorage:", parsedUser); // Debug log
+      setUser(parsedUser);
     }
   }, []);
 
@@ -53,6 +57,9 @@ export function DashboardHeader() {
             {showUserOverlay && user && (
               <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg p-4 z-10 border border-gray-200">
                 <div className="flex flex-col">
+                <span className="text-sm text-gray-500 mt-1">
+                    ID: {user.id}
+                  </span>
                   <span className="font-semibold text-gray-800">
                     {user.name}
                   </span>
@@ -60,6 +67,8 @@ export function DashboardHeader() {
                   <span className="text-sm text-gray-500 mt-1">
                     Role: {user.role}
                   </span>
+                 
+                  
                   <Button
                     variant="outline"
                     size="sm"

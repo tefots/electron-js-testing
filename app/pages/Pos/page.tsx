@@ -30,7 +30,7 @@ interface CartItem extends Product {
 }
 
 interface TransactionData {
-  items: CartItem[];
+  items: { productName: string; quantity: number }[]; // Updated to store only productName and quantity
   subtotal: number;
   discount: number;
   total: number;
@@ -42,7 +42,7 @@ interface TransactionData {
   phoneNumber?: string;
   cardNumber?: string;
   transactionDate: string;
-  loggedInUser: string; // New field for logged-in user
+  loggedInUser: number; // Stores userId
 }
 
 const POSPage = () => {
@@ -64,20 +64,28 @@ const POSPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [receiptData, setReceiptData] = useState<TransactionData | null>(null);
-  const [loggedInUser, setLoggedInUser] = useState<string>(""); // State for logged-in user
+  const [loggedInUser, setLoggedInUser] = useState<number | null>(null);
 
-  // Fetch logged-in user from localStorage
+  // Load logged-in user ID from localStorage
   useEffect(() => {
-    const user = localStorage.getItem("loggedInUser");
-    if (user) {
+    const storedUser = localStorage.getItem("loggedInUser");
+    if (storedUser) {
       try {
-        const parsedUser = JSON.parse(user);
-        setLoggedInUser(parsedUser.username || parsedUser.userId || "Unknown");
-      } catch {
-        setLoggedInUser("Unknown");
+        const parsedUser = JSON.parse(storedUser);
+        console.log("POSPage parsed user:", parsedUser);
+        if (parsedUser.id) {
+          setLoggedInUser(Number(parsedUser.id));
+        } else {
+          console.error("User ID not found in localStorage");
+          setLoggedInUser(null);
+        }
+      } catch (error) {
+        console.error("Error parsing loggedInUser:", error);
+        setLoggedInUser(null);
       }
     } else {
-      setLoggedInUser("Unknown");
+      console.error("No loggedInUser found in localStorage");
+      setLoggedInUser(null);
     }
   }, []);
 
@@ -113,7 +121,7 @@ const POSPage = () => {
   const saveTransactionToDatabase = async (transaction: TransactionData) => {
     try {
       const result = await window.electronAPI.insertTransaction({
-        items: JSON.stringify(transaction.items),
+        items: JSON.stringify(transaction.items), // JSON string of [{ productName, quantity }]
         subtotal: transaction.subtotal,
         discount: transaction.discount,
         total: transaction.total,
@@ -125,7 +133,7 @@ const POSPage = () => {
         phoneNumber: transaction.phoneNumber || null,
         cardNumber: transaction.cardNumber || null,
         transactionDate: transaction.transactionDate,
-        loggedInUser: transaction.loggedInUser, // Include logged-in user
+        loggedInUser: transaction.loggedInUser,
       });
       if (!result.success) {
         throw new Error(result.error || "Failed to save transaction");
@@ -211,12 +219,20 @@ const POSPage = () => {
       toast.error("Cart is empty!");
       return;
     }
+    if (!loggedInUser) {
+      toast.error("No logged-in user found. Please log in again.");
+      return;
+    }
     setShowPaymentModal(true);
   };
 
   const handlePayment = async () => {
     if (!paymentMethod) {
       toast.error("Please select a payment method");
+      return;
+    }
+    if (!loggedInUser) {
+      toast.error("No logged-in user found. Please log in again.");
       return;
     }
 
@@ -238,15 +254,16 @@ const POSPage = () => {
 
     setPaymentProcessing(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock payment processing
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success("Payment successful!");
 
-      // Calculate change
       const change = paymentMethod === "card" ? 0 : (amountPaid as number) - totalDue;
 
-      // Prepare transaction data
       const transactionData: TransactionData = {
-        items: cart,
+        items: cart.map((item) => ({
+          productName: item.productName,
+          quantity: item.quantity,
+        })),
         subtotal: calculateSubtotal(),
         discount: calculateDiscount(),
         total: calculateTotal(),
@@ -255,7 +272,7 @@ const POSPage = () => {
         amountPaid: paymentMethod === "card" ? totalDue : (amountPaid as number),
         change: change,
         transactionDate: new Date().toISOString(),
-        loggedInUser: loggedInUser, // Include logged-in user
+        loggedInUser: loggedInUser, 
         ...(paymentMethod === "digital" && {
           customerName: customerName,
           phoneNumber: phoneNumber,
@@ -264,6 +281,7 @@ const POSPage = () => {
           cardNumber: cardNumber,
         }),
       };
+
 
       // Save receipt data for display
       setReceiptData(transactionData);
@@ -287,6 +305,8 @@ const POSPage = () => {
       setPaymentProcessing(false);
     }
   };
+
+
 
   return (
     <DashboardLayout>
@@ -543,7 +563,7 @@ const POSPage = () => {
               <div className="text-center">
                 <h1 className="font-bold">Lesotho Nursery Shop</h1>
                 <p>Refund no: SB1005 Date: {new Date().toLocaleDateString()}</p>
-                <p>Processed by: {receiptData.loggedInUser}</p> {/* Display logged-in user */}
+                <p>Processed by: {receiptData.loggedInUser}</p>
               </div>
 
               <div className="mt-4">
@@ -558,9 +578,13 @@ const POSPage = () => {
                     <span>
                       {item.productName}
                       <br />
-                      @{item.price.toFixed(2)} each
+                      @{products.find((p) => p.productName === item.productName)?.price.toFixed(2) || "0.00"} each
                     </span>
-                    <span>{(item.price * item.quantity).toFixed(2)}</span>
+                    <span>
+                      {(
+                        (products.find((p) => p.productName === item.productName)?.price || 0) * item.quantity
+                      ).toFixed(2)}
+                    </span>
                   </div>
                 ))}
                 {receiptData.discount > 0 && (
