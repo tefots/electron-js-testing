@@ -29,6 +29,22 @@ interface CartItem extends Product {
   discount: number;
 }
 
+interface TransactionData {
+  items: CartItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  gst: number;
+  paymentMethod: string;
+  amountPaid: number;
+  change: number;
+  customerName?: string;
+  phoneNumber?: string;
+  cardNumber?: string;
+  transactionDate: string;
+  loggedInUser: string; // New field for logged-in user
+}
+
 const POSPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -44,22 +60,26 @@ const POSPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "digital" | "">("");
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [amountPaid, setAmountPaid] = useState<number | "">("");
-  const [customerName, setCustomerName] = useState(""); // New state for customer name
-  const [phoneNumber, setPhoneNumber] = useState(""); // New state for phone number
-  const [cardNumber, setCardNumber] = useState(""); // State for card number
-  const [receiptData, setReceiptData] = useState<{
-    items: CartItem[];
-    subtotal: number;
-    discount: number;
-    total: number;
-    gst: number;
-    paymentMethod: string;
-    amountPaid: number;
-    change: number;
-    customerName?: string;
-    phoneNumber?: string;
-    cardNumber?: string;
-  } | null>(null);
+  const [customerName, setCustomerName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [receiptData, setReceiptData] = useState<TransactionData | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<string>(""); // State for logged-in user
+
+  // Fetch logged-in user from localStorage
+  useEffect(() => {
+    const user = localStorage.getItem("loggedInUser");
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        setLoggedInUser(parsedUser.username || parsedUser.userId || "Unknown");
+      } catch {
+        setLoggedInUser("Unknown");
+      }
+    } else {
+      setLoggedInUser("Unknown");
+    }
+  }, []);
 
   // Fetch products from database
   const fetchProducts = async () => {
@@ -86,6 +106,34 @@ const POSPage = () => {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Save transaction to database
+  const saveTransactionToDatabase = async (transaction: TransactionData) => {
+    try {
+      const result = await window.electronAPI.insertTransaction({
+        items: JSON.stringify(transaction.items),
+        subtotal: transaction.subtotal,
+        discount: transaction.discount,
+        total: transaction.total,
+        gst: transaction.gst,
+        paymentMethod: transaction.paymentMethod,
+        amountPaid: transaction.amountPaid,
+        change: transaction.change,
+        customerName: transaction.customerName || null,
+        phoneNumber: transaction.phoneNumber || null,
+        cardNumber: transaction.cardNumber || null,
+        transactionDate: transaction.transactionDate,
+        loggedInUser: transaction.loggedInUser, // Include logged-in user
+      });
+      if (!result.success) {
+        throw new Error(result.error || "Failed to save transaction");
+      }
+      toast.success("Transaction saved to database!");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An error occurred while saving transaction";
+      toast.error(errorMessage);
     }
   };
 
@@ -196,8 +244,8 @@ const POSPage = () => {
       // Calculate change
       const change = paymentMethod === "card" ? 0 : (amountPaid as number) - totalDue;
 
-      // Save all relevant data for the receipt
-      setReceiptData({
+      // Prepare transaction data
+      const transactionData: TransactionData = {
         items: cart,
         subtotal: calculateSubtotal(),
         discount: calculateDiscount(),
@@ -206,6 +254,8 @@ const POSPage = () => {
         paymentMethod: paymentMethod,
         amountPaid: paymentMethod === "card" ? totalDue : (amountPaid as number),
         change: change,
+        transactionDate: new Date().toISOString(),
+        loggedInUser: loggedInUser, // Include logged-in user
         ...(paymentMethod === "digital" && {
           customerName: customerName,
           phoneNumber: phoneNumber,
@@ -213,7 +263,15 @@ const POSPage = () => {
         ...(paymentMethod === "card" && {
           cardNumber: cardNumber,
         }),
-      });
+      };
+
+      // Save receipt data for display
+      setReceiptData(transactionData);
+
+      // Save transaction to database
+      await saveTransactionToDatabase(transactionData);
+
+      // Clear cart and reset state
       setCart([]);
       localStorage.removeItem("cart");
       setShowPaymentModal(false);
@@ -485,6 +543,7 @@ const POSPage = () => {
               <div className="text-center">
                 <h1 className="font-bold">Lesotho Nursery Shop</h1>
                 <p>Refund no: SB1005 Date: {new Date().toLocaleDateString()}</p>
+                <p>Processed by: {receiptData.loggedInUser}</p> {/* Display logged-in user */}
               </div>
 
               <div className="mt-4">
@@ -499,7 +558,7 @@ const POSPage = () => {
                     <span>
                       {item.productName}
                       <br />
-                      @{item.price.toFixed(2)}ea
+                      @{item.price.toFixed(2)} each
                     </span>
                     <span>{(item.price * item.quantity).toFixed(2)}</span>
                   </div>

@@ -38,18 +38,28 @@ const db = new sqlite3.Database(dbPath, (err) => {
         creationDate DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
     },
-    {
+    { dummy: `Items,Subtotal,Discount,Total,GST,PaymentMethod,
+      AmountPaid,Change,CustomerNames,PhoneNumber,CardNumber,TransactionDate,LoggedInUser`,
       name: "transactions",
       query: `CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER NOT NULL,
-        productId INTEGER NOT NULL,
-        quantity INTEGER NOT NULL,
-        totalPrice REAL NOT NULL,
-        transactionDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
+        Items INTEGER NOT NULL,
+        Subtotal INTEGER NOT NULL,
+        Discount INTEGER NOT NULL,
+        TotalPrice REAL NOT NULL,
+        GST INTEGER NOT NULL,
+        PaymentMethod TEXT NOT NULL,
+        AmountPaid REAL NOT NULL,
+        Chnage INTEGER NOT NULL,
+        CustomerNames TEXT,
+        PhoneNumber INTEGER,
+        CardNumber INTEGER,
+        TransactionDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+        LoggeInUser INTEGER NOT NULL,
+        FOREIGN KEY (LoggeInUser) REFERENCES users(id) ON DELETE CASCADE,
+
       )`,
+      //        FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
     },
   ];
 

@@ -166,7 +166,7 @@ ipcMain.handle("saveProductImage", async (event, imageData) => {
   }
 });
 
-// Updated Add Product IPC Handler
+// Add Product IPC Handler
 ipcMain.handle(
   "addProduct",
   async (event, { productName, category, price, quantity, description, imageURL, creationDate }) => {
@@ -202,8 +202,6 @@ ipcMain.handle("getProducts", async () => {
       );
     });
   });
-
-
 
 // Delete Product IPC Handler
 ipcMain.handle("deleteProduct", async (event, { id }) => {
@@ -289,3 +287,42 @@ ipcMain.handle(
       });
     }
   );
+
+  // ==============================================
+  // TRANSACTIONS
+  // ==============================================
+
+  // Add transaction IPC Handler
+ipcMain.handle(
+  "insertTransaction",
+  async (event, {
+    items,
+    subtotal,
+    discount,
+    total,
+    gst,
+    paymentMethod,
+    amountPaid,
+    change,
+    customerName,
+    phoneNumber,
+    cardNumber,
+    transactionDate,
+    loggedInUser
+    
+    }) => {
+    return new Promise((resolve) => {
+      db.run(
+        "INSERT INTO products (Items,Subtotal,Discount,Total,GST,PaymentMethod,AmountPaid,Change,CustomerNames,PhoneNumber,CardNumber,TransactionDate,LoggedInUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [items,subtotal,discount,total,gst,paymentMethod,amountPaid,change,customerName,phoneNumber,cardNumber,transactionDate,loggedInUser],
+        function (err) {
+          if (err) {
+            resolve({ success: false, error: err.message });
+          } else {
+            resolve({ success: true, id: this.lastID });
+          }
+        }
+      );
+    });
+  }
+);

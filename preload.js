@@ -18,4 +18,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getProducts: () => ipcRenderer.invoke("getProducts"), 
   deleteProduct: (id) => ipcRenderer.invoke("deleteProduct", { id }),
   updateProduct: (productData) => ipcRenderer.invoke("updateProduct", productData),
+
+  // POS, ( transactions)
+  insertTransactions: (transactions) => ipcRenderer.invoke("insertTransaction", transactions),
 });

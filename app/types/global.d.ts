@@ -5,6 +5,7 @@ import { UserData, SignupResponse } from "./components/AuthComponents/SignupForm
 declare global {
   interface Window {
     electronAPI: {
+      insertTransaction: any;
       deleteProduct: any;
       updateProduct: any;
       getProducts: any;
