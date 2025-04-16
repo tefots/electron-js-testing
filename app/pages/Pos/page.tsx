@@ -40,8 +40,26 @@ const POSPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "digital" | "">("");
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [amountPaid, setAmountPaid] = useState<number | "">("");
+  const [customerName, setCustomerName] = useState(""); // New state for customer name
+  const [phoneNumber, setPhoneNumber] = useState(""); // New state for phone number
+  const [cardNumber, setCardNumber] = useState(""); // State for card number
+  const [receiptData, setReceiptData] = useState<{
+    items: CartItem[];
+    subtotal: number;
+    discount: number;
+    total: number;
+    gst: number;
+    paymentMethod: string;
+    amountPaid: number;
+    change: number;
+    customerName?: string;
+    phoneNumber?: string;
+    cardNumber?: string;
+  } | null>(null);
 
   // Fetch products from database
   const fetchProducts = async () => {
@@ -136,6 +154,10 @@ const POSPage = () => {
 
   const calculateTotal = () => calculateSubtotal() - calculateDiscount();
 
+  const calculateGST = () => (calculateTotal() * 0.07).toFixed(2);
+
+  const totalWithGST = () => (calculateTotal() + parseFloat(calculateGST())).toFixed(2);
+
   const handleCheckout = () => {
     if (cart.length === 0) {
       toast.error("Cart is empty!");
@@ -150,16 +172,57 @@ const POSPage = () => {
       return;
     }
 
+    const totalDue = parseFloat(totalWithGST());
+    if ((paymentMethod === "cash" || paymentMethod === "digital") && (!amountPaid || amountPaid < totalDue)) {
+      toast.error(`Amount paid (M${amountPaid}) must be at least M${totalDue}`);
+      return;
+    }
+
+    if (paymentMethod === "digital" && (!customerName || !phoneNumber)) {
+      toast.error("Please provide customer name and phone number for digital payments");
+      return;
+    }
+
+    if (paymentMethod === "card" && !cardNumber) {
+      toast.error("Please provide a card number for card payments");
+      return;
+    }
+
     setPaymentProcessing(true);
     try {
-      // Replace this with your actual payment API call via Electron
-      // Example: const result = await window.electronAPI.processPayment({ cart, paymentMethod, total: calculateTotal() });
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock payment processing
       toast.success("Payment successful!");
+
+      // Calculate change
+      const change = paymentMethod === "card" ? 0 : (amountPaid as number) - totalDue;
+
+      // Save all relevant data for the receipt
+      setReceiptData({
+        items: cart,
+        subtotal: calculateSubtotal(),
+        discount: calculateDiscount(),
+        total: calculateTotal(),
+        gst: parseFloat(calculateGST()),
+        paymentMethod: paymentMethod,
+        amountPaid: paymentMethod === "card" ? totalDue : (amountPaid as number),
+        change: change,
+        ...(paymentMethod === "digital" && {
+          customerName: customerName,
+          phoneNumber: phoneNumber,
+        }),
+        ...(paymentMethod === "card" && {
+          cardNumber: cardNumber,
+        }),
+      });
       setCart([]);
       localStorage.removeItem("cart");
       setShowPaymentModal(false);
+      setShowReceiptModal(true);
       setPaymentMethod("");
+      setAmountPaid("");
+      setCustomerName("");
+      setPhoneNumber("");
+      setCardNumber("");
     } catch (err) {
       toast.error("Payment failed. Please try again.");
     } finally {
@@ -332,7 +395,7 @@ const POSPage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg max-w-md w-full">
               <h2 className="text-xl font-bold mb-4">Complete Payment</h2>
-              <p className="mb-4">Total Amount: ${calculateTotal().toFixed(2)}</p>
+              <p className="mb-4">Total Amount: M{totalWithGST()}</p>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Payment Method</label>
                 <select
@@ -343,7 +406,8 @@ const POSPage = () => {
                   <option value="">Select Payment Method</option>
                   <option value="cash">Cash</option>
                   <option value="card">Credit/Debit Card</option>
-                  <option value="digital">Digital Payment (UPI, etc.)</option>
+                  <option value="digital">M-pesa</option>
+                  <option value="digital">Eco-Cash</option>
                 </select>
               </div>
               {paymentMethod === "card" && (
@@ -352,19 +416,47 @@ const POSPage = () => {
                   <input
                     type="text"
                     placeholder="1234 5678 9012 3456"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               )}
-              {paymentMethod === "cash" && (
+              {(paymentMethod === "cash" || paymentMethod === "digital") && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Cash Received</label>
+                  <label className="block text-sm font-medium mb-2">Amount Paid</label>
                   <input
                     type="number"
                     placeholder="Enter amount"
+                    value={amountPaid}
+                    onChange={(e) => setAmountPaid(e.target.value ? parseFloat(e.target.value) : "")}
                     className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
+              )}
+              {paymentMethod === "digital" && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">Customer Name</label>
+                    <input
+                      type="text"
+                      placeholder="Enter customer name"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2">Phone Number</label>
+                    <input
+                      type="text"
+                      placeholder="Enter phone number"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </>
               )}
               <div className="flex justify-end gap-4">
                 <button
@@ -380,6 +472,110 @@ const POSPage = () => {
                   disabled={paymentProcessing}
                 >
                   {paymentProcessing ? "Processing..." : "Confirm Payment"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Receipt Modal */}
+        {showReceiptModal && receiptData && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg max-w-md w-full font-mono text-sm">
+              <div className="text-center">
+                <h1 className="font-bold">Lesotho Nursery Shop</h1>
+                <p>Refund no: SB1005 Date: {new Date().toLocaleDateString()}</p>
+              </div>
+
+              <div className="mt-4">
+                <div className="flex justify-between font-bold border-b border-t py-1">
+                  <span>Qty</span>
+                  <span>Description</span>
+                  <span>Amount</span>
+                </div>
+                {receiptData.items.map((item, index) => (
+                  <div key={index} className="flex justify-between py-1">
+                    <span>{item.quantity}</span>
+                    <span>
+                      {item.productName}
+                      <br />
+                      @{item.price.toFixed(2)}ea
+                    </span>
+                    <span>{(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+                {receiptData.discount > 0 && (
+                  <div className="flex justify-between py-1">
+                    <span></span>
+                    <span>Less {((receiptData.discount / receiptData.subtotal) * 100).toFixed(0)}% Discount</span>
+                    <span>-{receiptData.discount.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4 border-t pt-2">
+                <div className="flex justify-between">
+                  <span>TOTAL (inclusive of GST):</span>
+                  <span>{(receiptData.total + receiptData.gst).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>GST @ 7%:</span>
+                  <span>{receiptData.gst.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Paid by:</span>
+                  <span>
+                    {receiptData.paymentMethod === "card"
+                      ? "Credit Card"
+                      : receiptData.paymentMethod === "cash"
+                      ? "Cash"
+                      : "Digital"}
+                  </span>
+                </div>
+                {receiptData.paymentMethod === "digital" && (
+                  <>
+                    <div className="flex justify-between">
+                      <span>Customer Name:</span>
+                      <span>{receiptData.customerName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Phone Number:</span>
+                      <span>{receiptData.phoneNumber}</span>
+                    </div>
+                  </>
+                )}
+                {receiptData.paymentMethod === "card" && (
+                  <div className="flex justify-between">
+                    <span>Card Number:</span>
+                    <span>{receiptData.cardNumber}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>Amount Paid:</span>
+                  <span>{receiptData.amountPaid.toFixed(2)}</span>
+                </div>
+                {receiptData.change > 0 && (
+                  <div className="flex justify-between">
+                    <span>Change:</span>
+                    <span>{receiptData.change.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-bold">
+                  <span></span>
+                  <span>{(receiptData.total + receiptData.gst).toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="text-center mt-4">
+                <p>Thank you!</p>
+              </div>
+
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => setShowReceiptModal(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                >
+                  Close
                 </button>
               </div>
             </div>
