@@ -19,7 +19,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 mt-4 md:grid-cols-2">
         <SalesGraph />
         <div className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4 text-green-600">Products Overview</h2>
+          <h2 className="text-lg font-semibold mb-4 text-green-600">Top selling Products</h2>
           <DataTable />
         </div>
       </div>

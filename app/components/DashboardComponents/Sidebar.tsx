@@ -9,6 +9,7 @@ import {
   Settings,
   LogOut,
   Menu,
+  Pen,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -44,6 +45,7 @@ export function DashboardSidebar() {
     { href: "/pages/Dashboard", icon: Home, label: "Dashboard" },
     { href: "/pages/users", icon: Users, label: "Users" },
     { href: "/pages/Products", icon: ShoppingCart, label: "Products" },
+    { href: "/pages/Transactions", icon: Pen, label: "Transactions" },
     { href: "/pages/Analytics", icon: BarChart2, label: "Analytics" },
     { href: "/pages/Settings", icon: Settings, label: "Settings" },
     { href: "/", icon: LogOut, label: "Logout" },
