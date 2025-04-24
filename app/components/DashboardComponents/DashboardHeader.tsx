@@ -43,9 +43,9 @@ export function DashboardHeader() {
     setShowUserOverlay(false); // Close user overlay if open
   };
 
-  const handleEditProfile = () => {
+  const handleUserProfile = () => {
     setShowUserOverlay(false);
-    router.push("/edit-profile");
+    router.push("/pages/users/Profile");
   };
 
   // Function to generate initials from the user's name (optional, kept for reference)
@@ -166,9 +166,9 @@ export function DashboardHeader() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleEditProfile}
+                    onClick={handleUserProfile}
                   >
-                    Edit Profile
+                    View Profile
                   </Button>
                   <Button
                     variant="outline"
