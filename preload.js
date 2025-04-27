@@ -1,11 +1,15 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
+  // users
   loginUser: (loginData) => ipcRenderer.invoke("loginUser", loginData),
   signupUser: (signupData) => ipcRenderer.invoke("signupUser", signupData),
   getUsers: () => ipcRenderer.invoke("getUsers"),
   deleteAllUsers: () => ipcRenderer.invoke("deleteAllUsers"),
   deleteUser: (id) => ipcRenderer.invoke("deleteUser", { id }),
+
+  
+  
   // Products
   saveProductImage: async (file) => {
     const buffer = await file.arrayBuffer();
