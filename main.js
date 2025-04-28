@@ -334,3 +334,71 @@ ipcMain.handle('insert-transaction', async (event, transaction) => {
     return { success: false, error: error.message };
   }
 });
+
+// IPC Handler for fetching transactions
+// ipcMain.handle('getTransactions', async (event) => {
+//   try {
+//     const query = `
+//       SELECT 
+//         id, 
+//         items, 
+//         subtotal, 
+//         discount, 
+//         total, 
+//         gst, 
+//         paymentMethod, 
+//         amountPaid, 
+//         change, 
+//         customerName, 
+//         phoneNumber, 
+//         cardNumber, 
+//         transactionDate, 
+//         loggedInUser 
+//       FROM transactions
+//       ORDER BY transactionDate DESC
+//     `;
+
+//     // Execute the query and return the results
+//     return new Promise((resolve, reject) => {
+//       db.all(query, [], (err, rows) => {
+//         if (err) {
+//           console.error('Error fetching transactions:', err.message);
+//           reject({ success: false, error: err.message });
+//         } else {
+//           resolve({ success: true, data: rows });
+//         }
+//       });
+//     });
+//   } catch (error) {
+//     console.error('Error in getTransactions handler:', error);
+//     return { success: false, error: error.message };
+//   }
+// });
+
+// user ids from users table
+ipcMain.handle("fetch-users", async () => {
+  try {
+    const query = "SELECT id FROM users"; // or any other fields you want
+    const result = await db.all(query);
+    return { success: true, data: result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('get-transactions', async (event, userId) => {
+  try {
+    const db = yourDatabaseConnection; // your db connection object
+
+    let transactions;
+    if (userId) {
+      transactions = db.prepare('SELECT * FROM transactions WHERE loggedInUser = ? ORDER BY transactionDate DESC').all(userId);
+    } else {
+      transactions = db.prepare('SELECT * FROM transactions ORDER BY transactionDate DESC').all();
+    }
+
+    return { success: true, data: transactions };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
