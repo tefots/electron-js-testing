@@ -40,7 +40,7 @@ export default function UserDetails() {
     if (id) {
       fetchUser();
     }
-  }, [id]);
+  });
 
   if (loading) return <p>Loading...</p>;
   if (!user) return <p>User not found</p>;

@@ -40,7 +40,6 @@ interface User {
 const UserFilter = ({
   users,
   isUsersLoading,
-  selectedUserId,
   onUserChange,
 }: {
   users: User[];
@@ -339,22 +338,22 @@ const TransactionDetailsModal = ({
         <strong>Payment Method:</strong> {transaction.paymentMethod}
       </p>
       <p>
-        <strong>Subtotal:</strong> MYR {transaction.subtotal.toFixed(2)}
+        <strong>Subtotal:</strong> M {transaction.subtotal.toFixed(2)}
       </p>
       <p>
         <strong>Discount:</strong> {transaction.discount}%
       </p>
       <p>
-        <strong>Total:</strong> MYR {transaction.total.toFixed(2)}
+        <strong>Total:</strong> M {transaction.total.toFixed(2)}
       </p>
       <p>
-        <strong>GST:</strong> MYR {transaction.gst.toFixed(2)}
+        <strong>GST:</strong> M {transaction.gst.toFixed(2)}
       </p>
       <p>
-        <strong>Amount Paid:</strong> MYR {transaction.amountPaid.toFixed(2)}
+        <strong>Amount Paid:</strong> M {transaction.amountPaid.toFixed(2)}
       </p>
       <p>
-        <strong>Change:</strong> MYR {transaction.change.toFixed(2)}
+        <strong>Change:</strong> M {transaction.change.toFixed(2)}
       </p>
       <p>
         <strong>Items:</strong> {transaction.items}
@@ -480,6 +479,7 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       toast.error("An error occurred while fetching users.");
+      console.log(error)
       setUsers([]);
     } finally {
       setIsUsersLoading(false);
@@ -510,6 +510,7 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       toast.error("An error occurred while fetching transactions.");
+      console.log(error);
       setTransactions([]);
     } finally {
       setLoading(false);
@@ -520,7 +521,7 @@ const TransactionsPage = () => {
   useEffect(() => {
     fetchUsers();
     fetchTransactions(selectedUserId);
-  }, []);
+  });
 
   // Refetch transactions when selectedUserId changes
   useEffect(() => {
