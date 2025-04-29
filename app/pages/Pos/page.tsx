@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardLayout } from "@/app/components/DashboardComponents/DashboardLayout";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -299,8 +300,10 @@ const POSPage = () => {
       setCustomerName("");
       setPhoneNumber("");
       setCardNumber("");
-    } catch (err) {
+    } catch (error) {
       toast.error("Payment failed. Please try again.");
+      console.log(error);
+
     } finally {
       setPaymentProcessing(false);
     }
@@ -360,7 +363,7 @@ const POSPage = () => {
                     key={product.id}
                     className="border rounded-lg p-4 flex flex-col items-center bg-white shadow-sm hover:shadow-md transition-shadow"
                   >
-                    <img
+                    <Image
                       src={product.imageURL}
                       alt={product.productName}
                       className="w-full h-32 object-cover rounded-md"

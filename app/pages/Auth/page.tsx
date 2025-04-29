@@ -1,13 +1,10 @@
-import LoginPage from "./Login";
-import SignupPage from "./Signup";
-
+import SignupForm from "@/app/components/Auth/SignupForm";
 
 export default function Auth(){
 
     return(
         <div>
-            <LoginPage />
-            {/* <SignupPage /> */}
+            <SignupForm />
         </div>
     )
 }
