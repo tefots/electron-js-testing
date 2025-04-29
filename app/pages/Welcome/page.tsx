@@ -26,7 +26,7 @@ export default function Welcome() {
 
         {/* Call-to-Action Button */}
         <Link
-          href="/pages/Auth"
+          href="/pages/Auth/Login"
           className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-green-600 text-white font-semibold text-sm sm:text-base rounded-lg shadow-lg hover:bg-gray-500 transition-all duration-300"
         >
           Get Started

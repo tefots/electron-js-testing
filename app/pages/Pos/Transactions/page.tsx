@@ -26,6 +26,12 @@ interface User {
   username: string;
 }
 
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: string;
+}
+
 const TransactionsPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -39,12 +45,19 @@ const TransactionsPage = () => {
   const fetchUsers = async () => {
     try {
       const result = await window.electronAPI.fetchUsers();
+      console.log("FetchUsers API Response:", result); // Debug the response
       if (!result.success) {
         throw new Error(result.error || "Failed to fetch users");
       }
-      setUsers(result.data);
+      if (Array.isArray(result.data)) {
+        setUsers(result.data);
+      } else {
+        console.error("Expected an array for users, received:", result.data);
+        setUsers([]);
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
+      setUsers([]); // Ensure users is always an array
     }
   };
 
@@ -53,14 +66,27 @@ const TransactionsPage = () => {
     setLoading(true);
     try {
       const result = await window.electronAPI.getTransactions(userId);
+      console.log("FetchTransactions API Response:", result); // Debug the response
       if (result.success) {
-        setTransactions(result.data || []);
+        if (Array.isArray(result.data)) {
+          setTransactions(result.data);
+        } else {
+          console.error(
+            "Expected an array for transactions, received:",
+            result.data,
+            "Type:",
+            typeof result.data,
+            "User ID:",
+            userId
+          );
+          setTransactions([]);
+        }
       } else {
         console.error("Error fetching transactions:", result.error);
         setTransactions([]);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error in fetchTransactions:", error);
       setTransactions([]);
     } finally {
       setLoading(false);
@@ -80,12 +106,14 @@ const TransactionsPage = () => {
 
   const filteredTransactions = useMemo(
     () =>
-      transactions.filter(
-        (transaction) =>
-          transaction.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          transaction.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          transaction.transactionDate.includes(searchQuery)
-      ),
+      Array.isArray(transactions)
+        ? transactions.filter(
+            (transaction) =>
+              transaction.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              transaction.paymentMethod.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              formatDate(transaction.transactionDate).toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : [],
     [transactions, searchQuery]
   );
 
@@ -142,11 +170,15 @@ const TransactionsPage = () => {
             }}
           >
             <option value="">All Users</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.username} (ID: {user.id})
-              </option>
-            ))}
+            {Array.isArray(users) && users.length > 0 ? (
+              users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username} (ID: {user.id})
+                </option>
+              ))
+            ) : (
+              <option disabled>No users available</option>
+            )}
           </select>
 
           {/* Search input */}

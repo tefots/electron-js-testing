@@ -402,9 +402,9 @@ ipcMain.handle('get-transactions', async (event, userId) => {
     } else {
       transactions = db.prepare('SELECT * FROM transactions ORDER BY transactionDate DESC').all();
     }
-
-    return { success: true, data: transactions };
+    const transactionsArray = Array.isArray(transactions) ? transactions : [];
+    return { success: true, data: transactionsArray };
   } catch (error) {
-    return { success: false, error: error.message };
+    return { success: false, error: error.message, data: [] };
   }
 });

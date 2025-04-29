@@ -2,11 +2,39 @@
 import { LoginData, LoginResponse } from "./components/AuthComponents/LoginForm";
 import { UserData, SignupResponse } from "./components/AuthComponents/SignupForm";
 
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+}
+
+interface Transaction {
+  id: number;
+  items: string;
+  subtotal: number;
+  discount: number;
+  total: number;
+  gst: number;
+  paymentMethod: "cash" | "card" | "digital";
+  amountPaid: number;
+  change: number;
+  customerName: string;
+  phoneNumber: string;
+  cardNumber: string;
+  transactionDate: string;
+  loggedInUser: number;
+} 
+
 declare global {
   interface Window {
     electronAPI: {
-      fetchUsers: any;
-      getTransactions: any;
+      fetchUsers: () => Promise<ApiResponse<User[]>>;
+      getTransactions: (userId: number | null) => Promise<ApiResponse<Transaction[]>>;
       insertTransaction: any;
       deleteProduct: any;
       updateProduct: any;
