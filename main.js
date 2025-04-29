@@ -376,20 +376,16 @@ ipcMain.handle('insert-transaction', async (event, transaction) => {
 // });
 
 // user ids from users table
-ipcMain.handle("fetch-users", async () => {
-  return new Promise((resolve) => {
-    db.all(
-      "SELECT id FROM users",
-      [],
-      (err, rows) => {
-        if (err) {
-          resolve({ success: false, error: err.message });
-        } else {
-          resolve({ success: true, users: rows });
-        }
-      }
-    );
-  });
+ipcMain.handle("fetch-users", async (event) => {
+  try {
+    const users = await db.query("SELECT * FROM users");
+    console.log("Raw users query result:", users); // Debug the result
+    const usersArray = Array.isArray(users) ? users : [];
+    return { success: true, data: usersArray };
+  } catch (error) {
+    console.error("Error in fetch-users:", error);
+    return { success: false, error: error.message, data: [] };
+  }
 });
 
 
