@@ -48,6 +48,7 @@ const AddProduct = () => {
       if (message) {
         setMessage("");
         setMessageType("");
+        console.log(imageURL)
       }
     }
   };

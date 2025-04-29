@@ -21,11 +21,6 @@ interface Transaction {
   loggedInUser: number;
 }
 
-// interface User {
-//   id: number;
-//   username: string;
-// }
-
 interface User {
   id: number;
   firstName: string;
@@ -35,12 +30,6 @@ interface User {
   userType: string;
   email: string;
   phoneNumber: string;
-}
-
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  error?: string;
 }
 
 const TransactionsPage = () => {

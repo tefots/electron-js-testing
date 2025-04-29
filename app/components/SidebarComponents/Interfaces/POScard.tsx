@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 interface posProps{
     image: React.ReactNode
     icon: React.ReactNode
-    title: String
+    title: string
     price: number
 }
 
