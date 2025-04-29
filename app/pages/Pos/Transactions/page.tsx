@@ -21,9 +21,20 @@ interface Transaction {
   loggedInUser: number;
 }
 
+// interface User {
+//   id: number;
+//   username: string;
+// }
+
 interface User {
   id: number;
-  username: string;
+  firstName: string;
+  lastName: string;
+  username: string,
+  status: string;
+  userType: string;
+  email: string;
+  phoneNumber: string;
 }
 
 interface ApiResponse<T> {
@@ -39,25 +50,25 @@ const TransactionsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isUsersLoading, setIsUsersLoading] = useState(true);
   const transactionsPerPage = 5;
 
   // Fetch all users
   const fetchUsers = async () => {
+    setIsUsersLoading(true);
     try {
-      const result = await window.electronAPI.fetchUsers();
-      console.log("FetchUsers API Response:", result); // Debug the response
-      if (!result.success) {
-        throw new Error(result.error || "Failed to fetch users");
-      }
-      if (Array.isArray(result.data)) {
-        setUsers(result.data);
+      const result = await window.electronAPI.getUsers();
+      if (result.success) {
+        setUsers(result.users || []);
       } else {
-        console.error("Expected an array for users, received:", result.data);
-        setUsers([]);
+        console.error('Error fetching users:', result.error);
+        setUsers([]); // set to empty array on error
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
-      setUsers([]); // Ensure users is always an array
+      console.error('Error:', error);
+      setUsers([]); // set to empty array on catch
+    } finally {
+      setIsUsersLoading(false);
     }
   };
 
@@ -65,8 +76,9 @@ const TransactionsPage = () => {
   const fetchTransactions = async (userId: number | null) => {
     setLoading(true);
     try {
+      console.log('User ID selected is: ', userId);
       const result = await window.electronAPI.getTransactions(userId);
-      console.log("FetchTransactions API Response:", result); // Debug the response
+      console.log("FetchTransactions API Response:", result);
       if (result.success) {
         if (Array.isArray(result.data)) {
           setTransactions(result.data);
@@ -168,12 +180,15 @@ const TransactionsPage = () => {
               setSelectedUserId(value ? parseInt(value) : null);
               setCurrentPage(1);
             }}
+            disabled={isUsersLoading}
           >
             <option value="">All Users</option>
-            {Array.isArray(users) && users.length > 0 ? (
+            {isUsersLoading ? (
+              <option disabled>Loading users...</option>
+            ) : users && Array.isArray(users) && users.length > 0 ? (
               users.map((user) => (
                 <option key={user.id} value={user.id}>
-                  {user.username} (ID: {user.id})
+                  {user.username}  {user.id}
                 </option>
               ))
             ) : (
@@ -212,7 +227,7 @@ const TransactionsPage = () => {
                   <th className="p-3">Bill Amount</th>
                   <th className="p-3">Discount</th>
                   <th className="p-3">Nett Amount</th>
-                  <th className="p-3">Details</th>
+                  <th className="p-3-condition">Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -245,23 +260,23 @@ const TransactionsPage = () => {
             </table>
           </div>
         )}
-
+        
         {/* Pagination */}
         <div className="flex justify-center mt-6">
-          {Array.from(
-            { length: Math.ceil(filteredTransactions.length / transactionsPerPage) },
-            (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => paginate(index + 1)}
-                className={`mx-1 px-3 py-1 rounded-lg ${
-                  currentPage === index + 1 ? "bg-purple-600 text-white" : "bg-gray-200"
-                }`}
-              >
-                {index + 1}
-              </button>
-            )
-          )}
+         {Array.from(
+          { length: Math.ceil(filteredTransactions.length / transactionsPerPage) },
+          (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              className={`mx-1 px-3 py-1 rounded-lg ${
+                currentPage === index + 1 ? "bg-purple-600 text-white" : "bg-gray-200"
+              }`}
+            >
+              {index + 1}
+            </button>
+          )
+        )}
         </div>
       </div>
     </DashboardLayout>

@@ -379,8 +379,11 @@ ipcMain.handle('insert-transaction', async (event, transaction) => {
 ipcMain.handle("fetch-users", async (event) => {
   try {
     const users = await db.query("SELECT * FROM users");
-    console.log("Raw users query result:", users); // Debug the result
-    const usersArray = Array.isArray(users) ? users : [];
+    console.log("Raw users query result:", users);
+    if (users === undefined) {
+      console.error("Database query returned undefined for users");
+    }
+    const usersArray = Array.isArray(users) ? users : users ? [users] : [];
     return { success: true, data: usersArray };
   } catch (error) {
     console.error("Error in fetch-users:", error);
@@ -389,15 +392,14 @@ ipcMain.handle("fetch-users", async (event) => {
 });
 
 
-ipcMain.handle('get-transactions', async (event, userId) => {
+ipcMain.handle("get-transactions", async (event, userId) => {
   try {
-
-    let transactions;
-    if (userId) {
-      transactions = db.prepare('SELECT * FROM transactions WHERE loggedInUser = ? ORDER BY transactionDate DESC').all(userId);
-    } else {
-      transactions = db.prepare('SELECT * FROM transactions ORDER BY transactionDate DESC').all();
-    }
+    const transactions = await db.query(
+      userId
+        ? "SELECT * FROM transactions WHERE loggedInUser = ?"
+        : "SELECT * FROM transactions",
+      [userId]
+    );
     const transactionsArray = Array.isArray(transactions) ? transactions : [];
     return { success: true, data: transactionsArray };
   } catch (error) {

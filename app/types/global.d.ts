@@ -49,6 +49,7 @@ declare global {
           id: number;
           firstName: string;
           lastName: string;
+          username: string,
           status: string;
           userType: string;
           email: string;
