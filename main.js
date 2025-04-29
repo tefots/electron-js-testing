@@ -71,7 +71,16 @@ ipcMain.handle(
   "signupUser",
   async (
     event,
-    { firstName, lastName, username, email, password, status, userType, phoneNumber }
+    {
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      status,
+      userType,
+      phoneNumber,
+    }
   ) => {
     return new Promise((resolve) => {
       bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -174,11 +183,30 @@ ipcMain.handle("saveProductImage", async (event, imageData) => {
 // Add Product IPC Handler
 ipcMain.handle(
   "addProduct",
-  async (event, { productName, category, price, quantity, description, imageURL, creationDate }) => {
+  async (
+    event,
+    {
+      productName,
+      category,
+      price,
+      quantity,
+      description,
+      imageURL,
+      creationDate,
+    }
+  ) => {
     return new Promise((resolve) => {
       db.run(
         "INSERT INTO products (productName, category, price, quantity, description, imageURL, creationDate) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [productName, category, price, quantity, description, imageURL || "", creationDate],
+        [
+          productName,
+          category,
+          price,
+          quantity,
+          description,
+          imageURL || "",
+          creationDate,
+        ],
         function (err) {
           if (err) {
             resolve({ success: false, error: err.message });
@@ -193,25 +221,69 @@ ipcMain.handle(
 
 // Get All Products IPC Handler
 ipcMain.handle("getProducts", async () => {
-    return new Promise((resolve) => {
-      db.all(
-        "SELECT id, productName, category, price, quantity, description, imageURL FROM products",
-        [],
-        (err, rows) => {
-          if (err) {
-            resolve({ success: false, error: err.message });
-          } else {
-            resolve({ success: true, products: rows });
-          }
+  return new Promise((resolve) => {
+    db.all(
+      "SELECT id, productName, category, price, quantity, description, imageURL FROM products",
+      [],
+      (err, rows) => {
+        if (err) {
+          resolve({ success: false, error: err.message });
+        } else {
+          resolve({ success: true, products: rows });
         }
-      );
-    });
+      }
+    );
   });
+});
 
 // Delete Product IPC Handler
 ipcMain.handle("deleteProduct", async (event, { id }) => {
+  return new Promise((resolve) => {
+    // First, get the product to retrieve its imageURL
+    db.get("SELECT imageURL FROM products WHERE id = ?", [id], (err, row) => {
+      if (err) {
+        resolve({ success: false, error: err.message });
+        return;
+      }
+      if (!row) {
+        resolve({ success: false, error: "Product not found" });
+        return;
+      }
+
+      // Delete the product from the database
+      db.run("DELETE FROM products WHERE id = ?", [id], function (err) {
+        if (err) {
+          resolve({ success: false, error: err.message });
+          return;
+        }
+        if (this.changes === 0) {
+          resolve({ success: false, error: "Product not found" });
+          return;
+        }
+
+        // Optionally delete the associated image file
+        if (row.imageURL) {
+          const imagePath = path.join(__dirname, "public", row.imageURL);
+          fs.unlink(imagePath).catch((err) => {
+            console.error("Failed to delete image file:", err);
+          });
+        }
+
+        resolve({ success: true, imageURL: row.imageURL });
+      });
+    });
+  });
+});
+
+// Update Product IPC Handler
+ipcMain.handle(
+  "updateProduct",
+  async (
+    event,
+    { id, productName, category, price, quantity, description, imageURL }
+  ) => {
     return new Promise((resolve) => {
-      // First, get the product to retrieve its imageURL
+      // First, get the current product to retrieve its existing imageURL
       db.get("SELECT imageURL FROM products WHERE id = ?", [id], (err, row) => {
         if (err) {
           resolve({ success: false, error: err.message });
@@ -221,85 +293,52 @@ ipcMain.handle("deleteProduct", async (event, { id }) => {
           resolve({ success: false, error: "Product not found" });
           return;
         }
-  
-        // Delete the product from the database
-        db.run("DELETE FROM products WHERE id = ?", [id], function (err) {
-          if (err) {
-            resolve({ success: false, error: err.message });
-            return;
+
+        // Update the product in the database
+        db.run(
+          "UPDATE products SET productName = ?, category = ?, price = ?, quantity = ?, description = ?, imageURL = ? WHERE id = ?",
+          [
+            productName,
+            category,
+            price,
+            quantity,
+            description,
+            imageURL || row.imageURL,
+            id,
+          ],
+          function (err) {
+            if (err) {
+              resolve({ success: false, error: err.message });
+              return;
+            }
+            if (this.changes === 0) {
+              resolve({ success: false, error: "Product not found" });
+              return;
+            }
+
+            // If a new image was uploaded, delete the old image file
+            if (imageURL && row.imageURL && imageURL !== row.imageURL) {
+              const oldImagePath = path.join(__dirname, "public", row.imageURL);
+              fs.unlink(oldImagePath).catch((err) => {
+                console.error("Failed to delete old image file:", err);
+              });
+            }
+
+            resolve({ success: true });
           }
-          if (this.changes === 0) {
-            resolve({ success: false, error: "Product not found" });
-            return;
-          }
-  
-          // Optionally delete the associated image file
-          if (row.imageURL) {
-            const imagePath = path.join(__dirname, "public", row.imageURL);
-            fs.unlink(imagePath).catch((err) => {
-              console.error("Failed to delete image file:", err);
-            });
-          }
-  
-          resolve({ success: true, imageURL: row.imageURL });
-        });
+        );
       });
     });
-  });
+  }
+);
 
-  // Update Product IPC Handler
-ipcMain.handle(
-    "updateProduct",
-    async (event, { id, productName, category, price, quantity, description, imageURL }) => {
-      return new Promise((resolve) => {
-        // First, get the current product to retrieve its existing imageURL
-        db.get("SELECT imageURL FROM products WHERE id = ?", [id], (err, row) => {
-          if (err) {
-            resolve({ success: false, error: err.message });
-            return;
-          }
-          if (!row) {
-            resolve({ success: false, error: "Product not found" });
-            return;
-          }
-  
-          // Update the product in the database
-          db.run(
-            "UPDATE products SET productName = ?, category = ?, price = ?, quantity = ?, description = ?, imageURL = ? WHERE id = ?",
-            [productName, category, price, quantity, description, imageURL || row.imageURL, id],
-            function (err) {
-              if (err) {
-                resolve({ success: false, error: err.message });
-                return;
-              }
-              if (this.changes === 0) {
-                resolve({ success: false, error: "Product not found" });
-                return;
-              }
-  
-              // If a new image was uploaded, delete the old image file
-              if (imageURL && row.imageURL && imageURL !== row.imageURL) {
-                const oldImagePath = path.join(__dirname, "public", row.imageURL);
-                fs.unlink(oldImagePath).catch((err) => {
-                  console.error("Failed to delete old image file:", err);
-                });
-              }
-  
-              resolve({ success: true });
-            }
-          );
-        });
-      });
-    }
-  );
+// ==============================================
+// TRANSACTIONS
+// ==============================================
 
-  // ==============================================
-  // TRANSACTIONS
-  // ==============================================
-
-  // Add transaction IPC Handler
+// Add transaction IPC Handler
 // IPC handler for inserting transactions
-ipcMain.handle('insert-transaction', async (event, transaction) => {
+ipcMain.handle("insert-transaction", async (event, transaction) => {
   try {
     await new Promise((resolve, reject) => {
       db.run(
@@ -339,21 +378,21 @@ ipcMain.handle('insert-transaction', async (event, transaction) => {
 // ipcMain.handle('getTransactions', async (event) => {
 //   try {
 //     const query = `
-//       SELECT 
-//         id, 
-//         items, 
-//         subtotal, 
-//         discount, 
-//         total, 
-//         gst, 
-//         paymentMethod, 
-//         amountPaid, 
-//         change, 
-//         customerName, 
-//         phoneNumber, 
-//         cardNumber, 
-//         transactionDate, 
-//         loggedInUser 
+//       SELECT
+//         id,
+//         items,
+//         subtotal,
+//         discount,
+//         total,
+//         gst,
+//         paymentMethod,
+//         amountPaid,
+//         change,
+//         customerName,
+//         phoneNumber,
+//         cardNumber,
+//         transactionDate,
+//         loggedInUser
 //       FROM transactions
 //       ORDER BY transactionDate DESC
 //     `;
@@ -391,18 +430,23 @@ ipcMain.handle("fetch-users", async (event) => {
   }
 });
 
-
 ipcMain.handle("get-transactions", async (event, userId) => {
   try {
-    const transactions = await db.query(
-      userId
-        ? "SELECT * FROM transactions WHERE loggedInUser = ?"
-        : "SELECT * FROM transactions",
-      [userId]
-    );
-    const transactionsArray = Array.isArray(transactions) ? transactions : [];
-    return { success: true, data: transactionsArray };
+    const query = userId
+      ? "SELECT * FROM transactions WHERE loggedInUser = ?"
+      : "SELECT * FROM transactions";
+    const params = userId ? [userId] : [];
+    return new Promise((resolve, reject) => {
+      db.all(query, params, (err, rows) => {
+        if (err) {
+          console.error("Backend: Database error:", err);
+          return { success: false, error: err.message, data: [] };
+        } else {
+          resolve({ success: true, data: rows });
+        }
+      });
+    });
   } catch (error) {
-    return { success: false, error: error.message, data: [] };
+    return { success: false, error: error.message };
   }
 });
