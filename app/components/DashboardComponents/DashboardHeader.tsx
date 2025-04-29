@@ -15,7 +15,7 @@ export function DashboardHeader() {
     email: string;
     role: string;
   } | null>(null);
-  const [notifications, setNotifications] = useState<string[]>([
+  const [notifications] = useState<string[]>([
     "Welcome to the platform!",
     "Your profile was updated recently.",
     "New message received.",
@@ -49,15 +49,7 @@ export function DashboardHeader() {
   };
 
   // Function to generate initials from the user's name (optional, kept for reference)
-  const getInitials = (name: string) => {
-    const nameParts = name.split(" ");
-    const initials = nameParts
-      .map((part) => part.charAt(0))
-      .join("")
-      .toUpperCase();
-    return initials.slice(0, 2);
-  };
-
+ 
   return (
     <header className="bg-white shadow-sm p-4 mb-5">
       <div className="flex justify-between items-center gap-4">

@@ -128,7 +128,7 @@ export default function LoginForm() {
             Login
           </button>
           <div className="mt-6 text-center">
-            Don't have an account?
+            Don&apos;t have an account?
             <Link
               href="/pages/Auth/Signup"
               className="text-center ms-4 text-blue-700 text-lg"
