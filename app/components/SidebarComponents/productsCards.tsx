@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 import  Link  from "next/link";
 
 interface ProductProps {
@@ -32,7 +33,7 @@ export default function ProductsCards({
       {/* Image */}
       <CardHeader className="p-0">
         <div className="relative w-full h-[200px] sm:h-[250px] md:h-[300px]">
-          <img
+          <Image
             src={image}
             alt={`Image of ${title}`}
             className="w-full h-full object-cover"
