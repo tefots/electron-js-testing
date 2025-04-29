@@ -377,18 +377,24 @@ ipcMain.handle('insert-transaction', async (event, transaction) => {
 
 // user ids from users table
 ipcMain.handle("fetch-users", async () => {
-  try {
-    const query = "SELECT id FROM users"; // or any other fields you want
-    const result = await db.all(query);
-    return { success: true, data: result };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
+  return new Promise((resolve) => {
+    db.all(
+      "SELECT id FROM users",
+      [],
+      (err, rows) => {
+        if (err) {
+          resolve({ success: false, error: err.message });
+        } else {
+          resolve({ success: true, users: rows });
+        }
+      }
+    );
+  });
 });
+
 
 ipcMain.handle('get-transactions', async (event, userId) => {
   try {
-    const db = yourDatabaseConnection; // your db connection object
 
     let transactions;
     if (userId) {

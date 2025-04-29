@@ -25,7 +25,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // POS, ( transactions)
   insertTransaction: (transactions) => ipcRenderer.invoke("insert-transaction", transactions),
-  getTransactions: (userid) => ipcRenderer.invoke("get-transactions", userid),
+  getTransactions: (userId) => ipcRenderer.invoke("get-transactions", userId),
   fetchUsers: () => ipcRenderer.invoke("fetch-users"),
 
 });

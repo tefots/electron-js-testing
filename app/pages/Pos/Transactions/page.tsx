@@ -34,6 +34,8 @@ const TransactionsPage = () => {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const transactionsPerPage = 5;
 
+  
+
   // Fetch all users
   const fetchUsers = async () => {
     try {
@@ -47,16 +49,25 @@ const TransactionsPage = () => {
     }
   };
 
+
+  function setLoading(arg0: boolean) {
+    throw new Error("Function not implemented.");
+  }
   // Fetch transactions for selected user
   const fetchTransactions = async (userId: number | null) => {
     try {
       const result = await window.electronAPI.getTransactions(userId);
-      if (!result.success) {
-        throw new Error(result.error || "Failed to fetch transactions");
+      if (result.success) {
+        setTransactions(result.users || []);
+      } else {
+        console.error('Error fetching transactions:', result.error);
+        setTransactions([]); // set to empty array on error
       }
-      setTransactions(result.data);
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      console.error('Error:', error);
+      setTransactions([]); // set to empty array on catch
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -204,3 +215,4 @@ const TransactionsPage = () => {
 };
 
 export default TransactionsPage;
+
