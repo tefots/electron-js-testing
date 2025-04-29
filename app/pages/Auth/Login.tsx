@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState } from 'react';
 import LoginForm from '../../components/Auth/LoginForm';
 import { checkCredentials, getUser, clearUser } from '../../utils/auth';
