@@ -33,10 +33,11 @@ export default function ProductsCards({
       {/* Image */}
       <CardHeader className="p-0">
         <div className="relative w-full h-[200px] sm:h-[250px] md:h-[300px]">
-          <Image
+        <Image
             src={image}
             alt={`Image of ${title}`}
-            className="w-full h-full object-cover"
+            layout="fill"
+            objectFit="cover"
           />
         </div>
       </CardHeader>

@@ -40,7 +40,7 @@ declare global {
       updateProduct: EditProductData;
       getProducts: any;
       saveProductImage: any;
-      addProduct: any;
+      addProduct: (ProductData);
       loginUser: (data: LoginData) => Promise<LoginResponse>;
       signupUser: (user: UserData) => Promise<SignupResponse>;
       getUsers: () => Promise<{

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DashboardLayout } from "@/app/components/DashboardComponents/DashboardLayout";
 
 // Define the shape of the response from the Electron API
-export interface SignupResponse {
+export interface addProductResponse {
   success: boolean;
   id?: number;
   error?: string;
@@ -191,6 +191,7 @@ const AddProduct = () => {
                 <option value="">Select a category</option>
                 <option value="Flowers">Flowers</option>
                 <option value="Fruit Trees">Fruit Trees</option>
+                <option value="Fruit Trees">Forest</option>
                 <option value="Herbs">Herbs</option>
               </select>
             </div>
