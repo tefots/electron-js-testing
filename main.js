@@ -1,38 +1,100 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
-const path = require("path");
-const fs = require("fs").promises;
-const db = require("./db");
-const bcrypt = require("bcrypt");
+const { app, BrowserWindow, ipcMain, protocol } = require('electron');
+const path = require('path');
+const fs = require('fs').promises;
+const db = require('./db');
+const bcrypt = require('bcrypt');
+const isDev = require('electron-is-dev');
 
-// Create public/products directory
-const productsDir = path.join(__dirname, "public", "products");
-fs.mkdir(productsDir, { recursive: true }).catch((err) =>
-  console.error("Failed to create products directory:", err)
-);
+// Configuration
+const PRODUCTS_DIR = path.join(__dirname, 'public', 'products');
+const NEXTJS_OUT_DIR = path.join(__dirname, 'out');
+const PORT = 3000;
 
+// Create required directories
+async function initializeDirectories() {
+  try {
+    await fs.mkdir(PRODUCTS_DIR, { recursive: true });
+    console.log('Products directory ready');
+  } catch (err) {
+    console.error('Directory initialization failed:', err);
+  }
+}
+
+// Main window creation
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, "preload.js"),
+      sandbox: true,
+      preload: path.join(__dirname, 'preload.js')
     },
+    show: false
   });
-  win.loadURL("http://localhost:3000");
+
+  // Load the appropriate URL based on environment
+  const loadApp = async () => {
+    try {
+      if (isDev) {
+        await win.loadURL(`http://localhost:${PORT}`);
+        win.webContents.openDevTools();
+      } else {
+        await win.loadFile(path.join(NEXTJS_OUT_DIR, 'index.html'));
+      }
+      win.show();
+    } catch (err) {
+      console.error('Failed to load:', err);
+      win.loadURL(`file://${path.join(NEXTJS_OUT_DIR, 'index.html')}`);
+    }
+  };
+
+  loadApp();
+  return win;
 }
 
-app.whenReady().then(() => {
-  createWindow();
+// Register file protocol for production
+function registerFileProtocol() {
+  protocol.registerFileProtocol('file', (request, callback) => {
+    const pathname = decodeURI(request.url.replace('file:///', ''));
+    callback(pathname);
+  });
+}
+
+// App lifecycle
+app.whenReady().then(async () => {
+  await initializeDirectories();
+  registerFileProtocol();
+  
+  const mainWindow = createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
+
+// Error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// *************************
+// IPC Handlers
+// *************************
+
 
 // Login user IPC Handler
-
 ipcMain.handle("loginUser", async (event, { username, password }) => {
   try {
     const user = await new Promise((resolve, reject) => {
@@ -450,3 +512,19 @@ ipcMain.handle("get-transactions", async (event, userId) => {
     return { success: false, error: error.message };
   }
 });
+
+
+
+// *************************
+// Production Optimizations
+// *************************
+
+// Disable hardware acceleration in production for better compatibility
+if (!isDev) {
+  app.disableHardwareAcceleration();
+}
+
+// GPU Feature Flags
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-gpu-compositing');

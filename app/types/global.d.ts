@@ -33,13 +33,13 @@ interface Transaction {
 declare global {
   interface Window {
     electronAPI: {
-      fetchUsers: () => Promise<ApiResponse<User[]>>;
+      // fetchUsers: () => Promise<ApiResponse<User[]>>;
       getTransactions: (userId: number | null) => Promise<ApiResponse<Transaction[]>>;
       insertTransaction: (TransactionData);
       deleteProduct: DeletedProduct;
       updateProduct: EditProductData;
-      getProducts: any;
-      saveProductImage: any;
+      getProducts: Product;
+      saveProductImage: imageFile;
       addProduct: (ProductData);
       loginUser: (data: LoginData) => Promise<LoginResponse>;
       signupUser: (user: UserData) => Promise<SignupResponse>;

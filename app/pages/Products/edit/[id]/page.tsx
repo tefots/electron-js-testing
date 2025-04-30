@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -13,6 +13,8 @@ interface EditProductData {
   description: string;
   imageURL: string;
 }
+
+
 
 export default function EditProduct() {
   const router = useRouter();

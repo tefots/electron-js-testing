@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { DashboardLayout } from "@/app/components/DashboardComponents/DashboardLayout";
 import Image from "next/image";
@@ -48,10 +48,7 @@ interface TransactionData {
 
 const POSPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cart, setCart] = useState<CartItem[]>([]); // Initialize with empty array
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
@@ -66,27 +63,43 @@ const POSPage = () => {
   const [cardNumber, setCardNumber] = useState("");
   const [receiptData, setReceiptData] = useState<TransactionData | null>(null);
   const [loggedInUser, setLoggedInUser] = useState<number | null>(null);
+  // Load cart from localStorage on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        try {
+          setCart(JSON.parse(savedCart));
+        } catch (error) {
+          console.error("Error parsing cart from localStorage:", error);
+          setCart([]);
+        }
+      }
+    }
+  }, []);
 
   // Load logged-in user ID from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("loggedInUser");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        console.log("POSPage parsed user:", parsedUser);
-        if (parsedUser.id) {
-          setLoggedInUser(Number(parsedUser.id));
-        } else {
-          console.error("User ID not found in localStorage");
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem("loggedInUser");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          console.log("POSPage parsed user:", parsedUser);
+          if (parsedUser.id) {
+            setLoggedInUser(Number(parsedUser.id));
+          } else {
+            console.error("User ID not found in localStorage");
+            setLoggedInUser(null);
+          }
+        } catch (error) {
+          console.error("Error parsing loggedInUser:", error);
           setLoggedInUser(null);
         }
-      } catch (error) {
-        console.error("Error parsing loggedInUser:", error);
+      } else {
+        console.error("No loggedInUser found in localStorage");
         setLoggedInUser(null);
       }
-    } else {
-      console.error("No loggedInUser found in localStorage");
-      setLoggedInUser(null);
     }
   }, []);
 

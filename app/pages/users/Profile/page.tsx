@@ -20,7 +20,7 @@ interface IpcResponse<T> {
 interface ElectronWindow extends Window {
   electron: {
     ipcRenderer: {
-      invoke: (channel: string, ...args: any[]) => Promise<any>;
+      invoke: (channel: string, ...args: string[]) => Promise<IpcResponse<User>>;
     };
   };
 }

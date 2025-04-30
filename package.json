@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+
     "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "build": "next build && next export && electron-packager . ElectronApp ",
+    "build": "next build && electron-packager . ElectronApp ",
     "start": "next start",
     "lint": "next lint",
     "next": "next",

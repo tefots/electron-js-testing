@@ -22,11 +22,22 @@ interface IpcResponse<T> {
   message?: string;
 }
 
+// Define type for update-user payload
+interface UpdateUserPayload {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
+}
+
 // Define type for window.electron.ipcRenderer
 interface ElectronWindow extends Window {
   electron: {
     ipcRenderer: {
-      invoke: (channel: string, ...args: any[]) => Promise<any>;
+      invoke: {
+        (channel: 'get-user', userId: string): Promise<IpcResponse<User>>;
+        (channel: 'update-user', payload: UpdateUserPayload): Promise<IpcResponse<never>>;
+      };
     };
   };
 }
@@ -74,7 +85,7 @@ const EditProfile: React.FC = () => {
   const handleUpdate = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError('');
-    const updatedData = {
+    const updatedData: UpdateUserPayload = {
       id: user.id,
       name: formData.name,
       email: formData.email,
