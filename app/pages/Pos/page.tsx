@@ -363,12 +363,21 @@ const POSPage = () => {
                     key={product.id}
                     className="border rounded-lg p-4 flex flex-col items-center bg-white shadow-sm hover:shadow-md transition-shadow"
                   >
-                    <Image
+                    <div className="relative w-full aspect-square">
+                            <Image
+                                src={product.imageURL}
+                                alt={product.productName}
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
+
+                    {/* <Image
                       src={product.imageURL}
                       alt={product.productName}
+                      className="w-full h-32 object-cover rounded-md"
                       layout="fill"
-                      objectFit="cover"
-                    />
+                    /> */}
                     <h3 className="mt-2 text-lg font-semibold">{product.productName}</h3>
                     <p className="text-gray-500">M{product.price.toFixed(2)}</p>
                     <p className="text-sm text-gray-400">{product.category}</p>
