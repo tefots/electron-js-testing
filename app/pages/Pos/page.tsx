@@ -366,7 +366,8 @@ const POSPage = () => {
                     <Image
                       src={product.imageURL}
                       alt={product.productName}
-                      className="w-full h-32 object-cover rounded-md"
+                      layout="fill"
+                      objectFit="cover"
                     />
                     <h3 className="mt-2 text-lg font-semibold">{product.productName}</h3>
                     <p className="text-gray-500">M{product.price.toFixed(2)}</p>
