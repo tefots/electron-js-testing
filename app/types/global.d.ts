@@ -35,9 +35,9 @@ declare global {
     electronAPI: {
       fetchUsers: () => Promise<ApiResponse<User[]>>;
       getTransactions: (userId: number | null) => Promise<ApiResponse<Transaction[]>>;
-      insertTransaction: any;
-      deleteProduct: any;
-      updateProduct: any;
+      insertTransaction: (TransactionData);
+      deleteProduct: DeletedProduct;
+      updateProduct: EditProductData;
       getProducts: any;
       saveProductImage: any;
       addProduct: any;

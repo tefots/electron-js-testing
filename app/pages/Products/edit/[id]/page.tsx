@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/app/components/DashboardComponents/DashboardLayout";
 
-interface Product {
+interface EditProductData {
   id: number;
   productName: string;
   category: string;
@@ -17,7 +17,7 @@ interface Product {
 export default function EditProduct() {
   const router = useRouter();
   const { id } = useParams(); // Get the dynamic id from the URL
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<EditProductData | null>(null);
   const [productName, setProductName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [price, setPrice] = useState<string>("");
@@ -38,7 +38,7 @@ export default function EditProduct() {
         setLoading(true);
         const result = await window.electronAPI.getProducts();
         if (result.success) {
-          const foundProduct = result.products.find((p: Product) => p.id === parseInt(id as string));
+          const foundProduct = result.products.find((p: EditProductData) => p.id === parseInt(id as string));
           if (foundProduct) {
             setProduct(foundProduct);
             setProductName(foundProduct.productName);
@@ -140,7 +140,7 @@ export default function EditProduct() {
     }
   };
 
-  const handleInputChange = (field: keyof Product) => (
+  const handleInputChange = (field: keyof EditProductData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     if (message) {

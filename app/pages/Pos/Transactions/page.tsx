@@ -461,11 +461,11 @@ const TransactionsPage = () => {
   }, [filteredTransactions, sortConfig]);
 
   // Fetch all users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     if (!window.electronAPI) {
-      toast.error("Electron API is not available.");
       setUsers([]);
       setIsUsersLoading(false);
+      toast.error("Electron API unavailable");
       return;
     }
     setIsUsersLoading(true);
@@ -478,13 +478,13 @@ const TransactionsPage = () => {
         setUsers([]);
       }
     } catch (error) {
-      toast.error("An error occurred while fetching users.");
-      console.log(error)
+      toast.error("Error fetching users");
+      console.log(error);
       setUsers([]);
     } finally {
       setIsUsersLoading(false);
     }
-  };
+  }, []);
 
   // Fetch transactions for selected user
   const fetchTransactions = async (userId: number | null) => {
@@ -510,6 +510,7 @@ const TransactionsPage = () => {
       }
     } catch (error) {
       toast.error("An error occurred while fetching transactions.");
+
       console.log(error);
       setTransactions([]);
     } finally {
@@ -520,8 +521,8 @@ const TransactionsPage = () => {
   // Initial fetch
   useEffect(() => {
     fetchUsers();
-    fetchTransactions(selectedUserId);
-  });
+    //fetchTransactions(selectedUserId);
+  }, [fetchUsers]);
 
   // Refetch transactions when selectedUserId changes
   useEffect(() => {
