@@ -14,11 +14,36 @@ interface EditProductData {
   imageURL: string;
 }
 
+interface ProductId {
+  id: number;
+}
 
+export async function getStaticPaths() {
+  const sqlite3 = await import("better-sqlite3").then((module) => module.default);
+  const path = await import("path");
+
+  const dbPath = path.resolve(process.cwd(), "database.sqlite");
+  let db = null;
+
+  try {
+    db = sqlite3(dbPath);
+    const products = db.prepare("SELECT id FROM products").all() as ProductId[];
+    const paths = products.map((product) => ({
+      params: { id: product.id.toString() },
+    }));
+    return { paths, fallback: false };
+  } catch (error) {
+    console.error("Error in getStaticPaths:", error);
+    return { paths: [], fallback: false };
+  } finally {
+    if (db) db.close();
+  }
+}
 
 export default function EditProduct() {
   const router = useRouter();
-  const { id } = useParams(); // Get the dynamic id from the URL
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
   const [product, setProduct] = useState<EditProductData | null>(null);
   const [productName, setProductName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -32,15 +57,18 @@ export default function EditProduct() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
-  // Fetch product on mount
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!id) return;
+      if (!id) {
+        setError("No product ID provided");
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
         const result = await window.electronAPI.getProducts();
         if (result.success) {
-          const foundProduct = result.products.find((p: EditProductData) => p.id === parseInt(id as string));
+          const foundProduct = result.products.find((p: EditProductData) => p.id === parseInt(id));
           if (foundProduct) {
             setProduct(foundProduct);
             setProductName(foundProduct.productName);
@@ -65,7 +93,6 @@ export default function EditProduct() {
     fetchProduct();
   }, [id]);
 
-  // Clear message after 1 minute
   useEffect(() => {
     if (messageType === "success" && message) {
       const timer = setTimeout(() => {
@@ -97,12 +124,18 @@ export default function EditProduct() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!id) {
+      setMessage("No product ID provided");
+      setMessageType("error");
+      return;
+    }
+
     try {
       let savedImageURL = imageURL;
       if (imageFile) {
         const imageResult = await window.electronAPI.saveProductImage(imageFile);
         if (imageResult.success) {
-          savedImageURL = imageResult.imageURL;
+          savedImageURL = imageResult.imageURL!;
         } else {
           setMessage(imageResult.error || "Failed to save image");
           setMessageType("error");
@@ -111,7 +144,7 @@ export default function EditProduct() {
       }
 
       const productData = {
-        id: parseInt(id as string),
+        id: parseInt(id),
         productName,
         category,
         price: parseFloat(price),

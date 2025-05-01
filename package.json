@@ -2,26 +2,25 @@
   "name": "electron-js-course",
   "version": "0.1.0",
   "private": true,
+  "main": "main.js",
   "scripts": {
-
     "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "build": "next build && electron-packager . ElectronApp ",
+    "build:web": "next build",
+    "build:electron": "electron-builder",
+    "build": "npm run build:web && npm run build:electron",
     "start": "next start",
     "lint": "next lint",
-    "next": "next",
     "electron-dev": "ts-node ./main.js"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-slot": "^1.1.0",
     "bcrypt": "^5.1.1",
-    "bcryptjs": "^3.0.2",
     "better-sqlite3": "^11.9.0",
     "chart.js": "^4.4.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "electron-packager": "^17.1.2",
-    "lodash": "^4.17.21",
+    "electron-is-dev": "^3.0.1",
     "lucide-react": "^0.462.0",
     "next": "^15.0.3",
     "react": "^19.0.0-rc-66855b96-20241106",
@@ -42,7 +41,6 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-toastify": "^4.1.0",
-    "@types/sqlite3": "^3.1.11",
     "concurrently": "^9.1.0",
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
@@ -54,8 +52,31 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   },
+  "build": {
+    "appId": "com.tefotsiu.electronapp",
+    "productName": "ElectronApp",
+    "files": [
+      "main.js",
+      "preload.js",
+      "db.js",
+      "out/**/*",
+      "public/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
+    }
+  },
   "description": "This is the electron js app build on top of next js app",
-  "main": "main.js",
-  "author": "Tefo Tsiu",
+  "author": {
+    "name": "Tefo Tsiu",
+    "email": "tefotsiu0@gmail.com"
+  },
   "license": "ISC"
 }

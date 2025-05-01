@@ -1,97 +1,53 @@
-const { app, BrowserWindow, ipcMain, protocol } = require('electron');
-const path = require('path');
-const fs = require('fs').promises;
-const db = require('./db');
-const bcrypt = require('bcrypt');
-const isDev = require('electron-is-dev');
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
+const fs = require("fs").promises;
+const db = require("./db");
+const bcrypt = require("bcrypt");
 
-// Configuration
-const PRODUCTS_DIR = path.join(__dirname, 'public', 'products');
-const NEXTJS_OUT_DIR = path.join(__dirname, 'out');
-const PORT = 3000;
+// Create public/products directory
+const productsDir = path.join(__dirname, "public", "products");
+fs.mkdir(productsDir, { recursive: true }).catch((err) =>
+  console.error("Failed to create products directory:", err)
+);
 
-// Create required directories
-async function initializeDirectories() {
-  try {
-    await fs.mkdir(PRODUCTS_DIR, { recursive: true });
-    console.log('Products directory ready');
-  } catch (err) {
-    console.error('Directory initialization failed:', err);
-  }
-}
-
-// Main window creation
-function createWindow() {
+async function createWindow() {
   const win = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
+    width: 800,
+    height: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, "preload.js"),
     },
-    show: false
   });
 
   // Load the appropriate URL based on environment
-  const loadApp = async () => {
+  if (process.env.NODE_ENV === "development") {
+    await win.loadURL("http://localhost:3000");
+  } else {
+    const filePath = path.join(__dirname, "out", "index.html");
     try {
-      if (isDev) {
-        await win.loadURL(`http://localhost:${PORT}`);
-        win.webContents.openDevTools();
-      } else {
-        await win.loadFile(path.join(NEXTJS_OUT_DIR, 'index.html'));
-      }
-      win.show();
+      await fs.access(filePath, fs.constants.F_OK);
+      await win.loadFile(filePath);
     } catch (err) {
-      console.error('Failed to load:', err);
-      win.loadURL(`file://${path.join(NEXTJS_OUT_DIR, 'index.html')}`);
+      console.error(`File not found: ${filePath}`);
+      app.quit();
     }
-  };
-
-  loadApp();
-  return win;
+  }
 }
 
-// Register file protocol for production
-function registerFileProtocol() {
-  protocol.registerFileProtocol('file', (request, callback) => {
-    const pathname = decodeURI(request.url.replace('file:///', ''));
-    callback(pathname);
-  });
-}
+app.disableHardwareAcceleration();
 
-// App lifecycle
-app.whenReady().then(async () => {
-  await initializeDirectories();
-  registerFileProtocol();
-  
-  const mainWindow = createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+app.whenReady().then(() => {
+  createWindow().catch((err) => {
+    console.error("Failed to create window:", err);
+    app.quit();
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });
-
-// Error handling
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-// *************************
-// IPC Handlers
-// *************************
 
 
 // Login user IPC Handler
@@ -399,7 +355,6 @@ ipcMain.handle(
 // ==============================================
 
 // Add transaction IPC Handler
-// IPC handler for inserting transactions
 ipcMain.handle("insert-transaction", async (event, transaction) => {
   try {
     await new Promise((resolve, reject) => {
@@ -436,62 +391,6 @@ ipcMain.handle("insert-transaction", async (event, transaction) => {
   }
 });
 
-// IPC Handler for fetching transactions
-// ipcMain.handle('getTransactions', async (event) => {
-//   try {
-//     const query = `
-//       SELECT
-//         id,
-//         items,
-//         subtotal,
-//         discount,
-//         total,
-//         gst,
-//         paymentMethod,
-//         amountPaid,
-//         change,
-//         customerName,
-//         phoneNumber,
-//         cardNumber,
-//         transactionDate,
-//         loggedInUser
-//       FROM transactions
-//       ORDER BY transactionDate DESC
-//     `;
-
-//     // Execute the query and return the results
-//     return new Promise((resolve, reject) => {
-//       db.all(query, [], (err, rows) => {
-//         if (err) {
-//           console.error('Error fetching transactions:', err.message);
-//           reject({ success: false, error: err.message });
-//         } else {
-//           resolve({ success: true, data: rows });
-//         }
-//       });
-//     });
-//   } catch (error) {
-//     console.error('Error in getTransactions handler:', error);
-//     return { success: false, error: error.message };
-//   }
-// });
-
-// user ids from users table
-ipcMain.handle("fetch-users", async (event) => {
-  try {
-    const users = await db.query("SELECT * FROM users");
-    console.log("Raw users query result:", users);
-    if (users === undefined) {
-      console.error("Database query returned undefined for users");
-    }
-    const usersArray = Array.isArray(users) ? users : users ? [users] : [];
-    return { success: true, data: usersArray };
-  } catch (error) {
-    console.error("Error in fetch-users:", error);
-    return { success: false, error: error.message, data: [] };
-  }
-});
-
 ipcMain.handle("get-transactions", async (event, userId) => {
   try {
     const query = userId
@@ -512,19 +411,3 @@ ipcMain.handle("get-transactions", async (event, userId) => {
     return { success: false, error: error.message };
   }
 });
-
-
-
-// *************************
-// Production Optimizations
-// *************************
-
-// Disable hardware acceleration in production for better compatibility
-if (!isDev) {
-  app.disableHardwareAcceleration();
-}
-
-// GPU Feature Flags
-app.commandLine.appendSwitch('disable-software-rasterizer');
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('disable-gpu-compositing');
